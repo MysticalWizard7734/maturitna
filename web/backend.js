@@ -1,37 +1,40 @@
 const express = require('express');
-const mysql = require('mysql2');
 const path = require('path');
 const app = express();
 const port = 80;
 
-/* databaza connect */ 
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'newpassword',
-  database: 'smart_data'
-});
+const {deleteRow, loadEspData} = require('./database_backend_operations');
 
-db.connect((err) => {
-  if (err) {
-    console.error('Error connecting to the database:', err.stack);
-    return;
-  }
-  console.log('Connected to the database');
-});
+const idColumnMappings = {
+  esp: 'esp_id',
+  room: 'room_id',
+  // TODO add the colours table
+};
 
 // Endpoint to get all rows of a specific table
 app.get('/data', (req, res) => {
-  const tableName = 'esp';
-  const query = `SELECT * FROM ${tableName}`;
+  loadEspData(req, res);
+});
 
-  db.query(query, (err, results) => {
-    if (err) {
-      res.status(500).send('Error retrieving data from the database');
-      return;
+app.delete('/delete/:tableName/:id', async (req, res) => {
+  const { tableName, id } = req.params;
+  const idColumn = idColumnMappings[tableName]; // Get the column name for the table
+  console.log(`Received a delete request: Table=${tableName}, ID=${id}`);
+
+  if (!idColumn) {
+    return res.status(400).json({ error: 'ID column not defined for this table' });
+  }
+
+  try {
+    const success = await deleteRow(tableName, idColumn, id);
+    if (success) {
+      res.status(200).json({ message: 'Row deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Row not found' });
     }
-    res.json(results);
-  });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 app.get('/', (req, res) => {

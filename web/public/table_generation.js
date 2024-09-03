@@ -38,10 +38,20 @@ document.addEventListener('DOMContentLoaded', async () => {     //zbehne ked sa 
             const delete_button = document.createElement('button');
             delete_button.type = 'button';
             delete_button.classList.add('delete-button'); // Add a class for styling
-            
+
             // Create an icon element for Font Awesome
             const icon = document.createElement('i');
             icon.classList.add('fas', 'fa-trash'); // Font Awesome trashcan icon class
+
+            delete_button.dataset.table = 'esp';
+            delete_button.dataset.esp_id = row.esp_id;
+
+            // Add event listener to call delete_row function
+            delete_button.addEventListener('click', (event) => {
+                const tableName = event.target.closest('button').dataset.table;
+                const id = event.target.closest('button').dataset.esp_id;
+                delete_row(tableName, id);
+            });
 
             // Append the icon to the button
             delete_button.appendChild(icon);
@@ -60,6 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {     //zbehne ked sa 
     }
 });
 
+//todo
 async function updateName(event) {
     const input = event.target;
     const id = input.dataset.id;
