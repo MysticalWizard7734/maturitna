@@ -1,0 +1,54 @@
+/* Ensure table borders don't collapse into each other */
+table {
+  width: 100%;
+  border-collapse: collapse; /* Ensures borders are not doubled */
+}
+
+/* Center the table within the container */
+.container {
+  display: grid;
+  justify-content: center;
+  transform: scale(1.6); /* Scale up to 200% */
+  transform-origin: top left; /* Scale from the center of the element */
+  width: 62.5%; /* Adjust width to fit scaled content */
+}
+
+/* Center the main title text */
+.Main-Title {
+  text-align: center;
+}
+
+/* Style table headers and cells */
+th, td {
+  border: 1px solid black; /* Single border for all cells */
+  padding: 8px;
+  text-align: left;
+}
+
+/* Style table headers specifically */
+th {
+  background-color: #f2f2f2;
+}
+/* Style the actions cell for horizontal centering */
+.actions-Cell {
+  text-align: center; /* Center horizontally */
+  vertical-align: middle; /* Center vertically, if applicable */
+}
+
+/* Style the delete button */
+.delete-button {
+  background-color: #ff4d4d; /* Red background */
+  color: white; /* White icon color */
+  border: none; /* Remove default border */
+  border-radius: 4px; /* Rounded corners */
+  padding: 5px 10px; /* Padding around the icon */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.delete-button:hover {
+  background-color: #cc0000; /* Darker red on hover */
+}
+
+.delete-button i {
+  font-size: 16px; /* Adjust icon size */
+}
