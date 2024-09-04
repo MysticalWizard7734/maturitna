@@ -46,14 +46,6 @@ th {
   margin: 4px;  /* Margin for icon spacing*/
 }
 
-.delete-button{
-  /*background-color: rgb(225, 77, 77); /* Red background */
-}
-
-.edit-button{
-  /*background-color: rgb(77, 225, 77); /* Green background */
-}
-
 .delete-button:hover {
   background-color: rgb(192, 128, 128); /* Darker red on hover */
 }

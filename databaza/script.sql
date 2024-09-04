@@ -32,6 +32,3 @@ CREATE TABLE esp (
     room_id int,
         FOREIGN KEY (room_id) REFERENCES rooms(room_id)
 );
-
-INSERT INTO esp (ESP_ID) VALUES ('ESP_1234567890');
-INSERT INTO esp (ESP_ID) VALUES ('ESP_0987654321');
