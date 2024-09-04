@@ -36,19 +36,32 @@ th {
 }
 
 /* Style the delete button */
-.delete-button {
-  background-color: #ff4d4d; /* Red background */
+.delete-button, .edit-button {
   color: white; /* White icon color */
-  border: none; /* Remove default border */
+  border: 1px; /* Border */
+  border-color: black;
   border-radius: 4px; /* Rounded corners */
   padding: 5px 10px; /* Padding around the icon */
   cursor: pointer; /* Pointer cursor on hover */
+  margin: 4px;  /* Margin for icon spacing*/
+}
+
+.delete-button{
+  /*background-color: rgb(225, 77, 77); /* Red background */
+}
+
+.edit-button{
+  /*background-color: rgb(77, 225, 77); /* Green background */
 }
 
 .delete-button:hover {
-  background-color: #cc0000; /* Darker red on hover */
+  background-color: rgb(192, 128, 128); /* Darker red on hover */
 }
 
-.delete-button i {
+.edit-button:hover {
+  background-color: rgb(128, 192, 128);
+}
+
+.delete-button i, .edit-button i {
   font-size: 16px; /* Adjust icon size */
 }

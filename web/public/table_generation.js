@@ -1,9 +1,14 @@
+document.addEventListener("DOMContentLoaded", function () {
+    generateTable();
+});
+
 //blur sa triggerne ked pole strati focus
 
-document.addEventListener('DOMContentLoaded', async () => {     //zbehne ked sa nacita cele HTML (bez stylov, obrazkov...)
+async function generateTable() {
     const response = await fetch('/data');      //request na /data endpoint
     const data = await response.json();         //data sa parsne do premennej data
     const dataDiv = document.getElementById('data');    // Get the HTML element with the ID 'data' to insert the fetched table data into it
+    dataDiv.innerHTML = '';
 
     if (data.length > 0) {
         const table = document.createElement('table');  // creatne elementy table, thead, tbody aby sa do nich mohli vkladat data
@@ -28,36 +33,73 @@ document.addEventListener('DOMContentLoaded', async () => {     //zbehne ked sa 
             Object.entries(row).forEach(([key, value]) => {
                 console.log("Key: " + key);
                 console.log("Value: " + value);
+
                 const td = document.createElement('td');
-                td.textContent = value;
+
+                if (key === 'module_type_ID') {
+                    // Extract the first element of the data array inside the Buffer object
+                    try {
+                        const bufferValue = value.data[0];
+                        td.textContent = bufferValue ? 'REL' : 'RGB';
+                    }
+                    catch {
+                        console.log('Buffer is null')
+                        td.textContent = value;
+                    }
+                }
+                else {
+                    td.textContent = value;
+                }
+
+                td.dataset.key = key;  // Set the data-key attribute
                 tr.appendChild(td);
             });
 
             const actionsCell = document.createElement('td');   // vytvaranie actions cell
             actionsCell.classList.add('actions-Cell'); // Add a class for styling
-            const delete_button = document.createElement('button');
+            actionsCell.dataset.key = 'Actions';  // Set the data-key attribute
+
+            const edit_button = document.createElement('button');    //edit button
+            edit_button.type = 'button';
+            edit_button.classList.add('edit-button');
+            const editIcon = document.createElement('i');   // Create an icon element for Font Awesome
+            editIcon.classList.add('fas', 'fa-edit');
+            edit_button.appendChild(editIcon);
+
+            const delete_button = document.createElement('button'); //delete button
             delete_button.type = 'button';
             delete_button.classList.add('delete-button'); // Add a class for styling
-
-            // Create an icon element for Font Awesome
-            const icon = document.createElement('i');
-            icon.classList.add('fas', 'fa-trash'); // Font Awesome trashcan icon class
+            const trashIcon = document.createElement('i');   // Create an icon element for Font Awesome
+            trashIcon.classList.add('fas', 'fa-trash');
+            delete_button.appendChild(trashIcon);
 
             delete_button.dataset.table = 'esp';
             delete_button.dataset.esp_id = row.esp_id;
 
             // Add event listener to call delete_row function
-            delete_button.addEventListener('click', (event) => {
+            delete_button.addEventListener('click', async (event) => {
                 const tableName = event.target.closest('button').dataset.table;
                 const id = event.target.closest('button').dataset.esp_id;
-                delete_row(tableName, id);
+                await delete_row(tableName, id);
+                //generateTable();  //refresh table
+
+                event.target.closest('tr').remove();    //namiesto refreshnutia celej tabulky mozem vymazat najblizsi riadok
             });
 
-            // Append the icon to the button
-            delete_button.appendChild(icon);
-
+            edit_button.addEventListener('click', (event) => {
+                const row = event.target.closest('tr');
+                row.querySelectorAll('td').forEach(td => {
+                    if (td.dataset.key !== 'esp_id' && td.dataset.key !== 'Actions') { // Make all cells editable except for IDs
+                        td.contentEditable = (td.contentEditable === "true") ? "false" : "true";
+                        if (td.contentEditable === "true") {
+                            td.focus();
+                        }
+                    }
+                });
+            });
 
             tr.appendChild(actionsCell);
+            actionsCell.appendChild(edit_button);
             actionsCell.appendChild(delete_button);
 
             tbody.appendChild(tr);
@@ -68,7 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {     //zbehne ked sa 
     } else {
         dataDiv.textContent = 'No data found';
     }
-});
+};
 
 //todo
 async function updateName(event) {
