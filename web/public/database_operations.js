@@ -14,3 +14,7 @@ async function delete_row(table_name, id) {
         console.error('There was a problem with the delete request:', error);
     }
 }
+/*
+async function edit_row(){
+    console.log('row edit saved');
+}*/

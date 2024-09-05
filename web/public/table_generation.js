@@ -86,16 +86,19 @@ async function generateTable() {
                 event.target.closest('tr').remove();    //namiesto refreshnutia celej tabulky mozem vymazat najblizsi riadok
             });
 
+            let edit_state = false;
             edit_button.addEventListener('click', (event) => {
                 const row = event.target.closest('tr');
+
+                edit_button.style.backgroundColor = (edit_state) ? 'rgb(242, 242, 242)' : 'rgb(128, 192, 128)';
+                if (edit_state) edit_row(row);
+
                 row.querySelectorAll('td').forEach(td => {
                     if (td.dataset.key !== 'esp_id' && td.dataset.key !== 'Actions') { // Make all cells editable except for IDs
                         td.contentEditable = (td.contentEditable === "true") ? "false" : "true";
-                        if (td.contentEditable === "true") {
-                            td.focus();
-                        }
                     }
                 });
+                edit_state = !edit_state;
             });
 
             tr.appendChild(actionsCell);
@@ -112,23 +115,37 @@ async function generateTable() {
     }
 };
 
-//todo
-async function updateName(event) {
-    const input = event.target;
-    const id = input.dataset.id;
-    const newName = input.value;
+// Function to handle cell update
+async function edit_row(row) {
+    const columns = row.querySelectorAll('td');  // select all td elements in the row
 
+    // Iterate over the columns and extract their values
+    let columnValues = [];
+    columns.forEach((column) => {
+        columnValues.push(column.textContent.trim());  // or column.innerText.trim()
+    });
+
+    // Here you need to send the updated value to the server
+    // This example assumes you have an endpoint `/update` to handle updates
     try {
-        const response = await fetch(`/update-name/${id}`, {
-            method: 'PUT',
+        const response = await fetch('/updateEspRow', {
+            method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name: newName })
+            body: JSON.stringify({
+                rowId: columnValues[0],
+                esp_name: columnValues[1],
+                number_of_LEDs: columnValues[2],
+                module_type_ID: columnValues[3],
+                room_id: columnValues[4]
+            }),
         });
-        const result = await response.json();
-        console.log(result.message);
+
+        if (!response.ok) {
+            throw new Error('Failed to update cell');
+        }
     } catch (error) {
-        console.error('Error updating name:', error);
+        console.error('Error updating cell:', error);
     }
-}  
+}

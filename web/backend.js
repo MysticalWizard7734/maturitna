@@ -37,6 +37,10 @@ app.delete('/delete/:tableName/:id', async (req, res) => {
   }
 });
 
+app.post('/updateEspRow', (req, res) => {
+  updateEspRow(req, res);
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 })
