@@ -3,7 +3,9 @@ const path = require('path');
 const app = express();
 const port = 80;
 
-const {deleteRow, loadEspData} = require('./database_backend_operations');
+app.use(express.json());  // Middleware to parse JSON request bodies
+
+const {deleteRow, loadEspData, updateEspRow} = require('./database_backend_operations');
 
 const idColumnMappings = {
   esp: 'esp_id',
@@ -38,7 +40,10 @@ app.delete('/delete/:tableName/:id', async (req, res) => {
 });
 
 app.post('/updateEspRow', (req, res) => {
-  updateEspRow(req, res);
+  const data = req.body;
+  updateEspRow(data);
+
+  
 });
 
 app.get('/', (req, res) => {
@@ -47,6 +52,7 @@ app.get('/', (req, res) => {
 
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
