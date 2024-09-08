@@ -4,6 +4,11 @@ table {
   border-collapse: collapse; /* Ensures borders are not doubled */
 }
 
+a {
+  text-decoration: none;
+  color: inherit;         /* Inherit color from parent elements */
+}
+
 /* Center the table within the container */
 .container {
   display: grid;

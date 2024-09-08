@@ -12,6 +12,7 @@ async function delete_row(table_name, id) {
         console.log('Server response:', data);
     } catch (error) {
         console.error('There was a problem with the delete request:', error);
+        generateTable();
     }
 }
 
@@ -44,12 +45,24 @@ async function edit_row(row) {
             }),
         });
 
+        const errorResponse = await response.json();
+
         if (!response.ok) {
+            console.log('Response was not ok, status: ' + response.status);
+            if (response.status === 400) {
+                alert(`Bad request: ${errorResponse.message}`);
+            } else if (response.status === 404) {
+                alert('Row not found');
+            } else {
+                alert('Failed to update cell. Server error occurred.');
+            }
+
             throw new Error('Failed to update cell');
         } else {
             console.log('Update successful');
         }
     } catch (error) {
         console.error('Error updating cell:', error);
+        generateTable();
     }
 }

@@ -30,28 +30,30 @@ async function updateEspRow(data) {
 
     let { esp_id, esp_name, number_of_LEDs, module_type_ID, room_id } = data;
 
-    const [oldValues] = await pool.execute('SELECT * FROM esp WHERE esp.esp_id = ?', [esp_id]);
-    console.log(oldValues);
+    const [row] = await pool.execute('SELECT * FROM esp WHERE esp.esp_id = ?', [esp_id]);
+    const oldValues = row[0];  // Get the first row from the result
 
-    /*if (typeof module_type_ID !== 'object' || !Buffer.isBuffer(module_type_ID)) module_type_ID = oldValues.module_type_ID;*/
-
-    if(number_of_LEDs === !isNaN(parseInt(number_of_LEDs, 10))) number_of_LEDs = parseInt(number_of_LEDs, 10);
-    else if(number_of_LEDs === '') number_of_LEDs = null;
+    if (!isNaN(parseInt(number_of_LEDs, 10))) number_of_LEDs = parseInt(number_of_LEDs, 10);
+    else if (number_of_LEDs === '') number_of_LEDs = null;
     else number_of_LEDs = oldValues.number_of_LEDs;
 
-    
+    if (!isNaN(parseInt(room_id, 10))) room_id = parseInt(room_id, 10);
+    else if (room_id === '') room_id = null;
+    else room_id = oldValues.room_id;
 
-    room_id = room_id === '' ? null : room_id;
     esp_name = esp_name === '' ? null : esp_name
+
+    module_type_ID = module_type_ID.toUpperCase();
+
     if (module_type_ID === '') module_type_ID = null;
     else if (module_type_ID === 'REL') module_type_ID = true;
-    else module_type_ID = false;
+    else if (module_type_ID === 'RGB') module_type_ID = false;
+    else if (module_type_ID === '') module_type_ID = null;
+    else module_type_ID = oldValues.module_type_ID;
 
     number_of_LEDs = isNaN(parseInt(number_of_LEDs, 10)) ? oldValues.number_of_LEDs : parseInt(number_of_LEDs, 10);
     room_id = isNaN(parseInt(room_id, 10)) ? oldValues.room_id : parseInt(room_id, 10);
     esp_name = esp_name.trim() === '' ? null : esp_name.trim();
-
-    console.log(data);
 
     const updateQuery = `
     UPDATE esp 
