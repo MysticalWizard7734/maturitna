@@ -24,11 +24,11 @@ INSERT INTO rooms () VALUES ();
 INSERT INTO rooms () VALUES ();
 
 CREATE TABLE esp (
-    ESP_ID char(14) PRIMARY KEY,
+    esp_id char(14) PRIMARY KEY,
     esp_name varchar(20),
     number_of_LEDs int,
     module_type_ID bit,
         FOREIGN KEY (module_type_ID) REFERENCES module_types(module_type_ID),
     room_id int,
-        FOREIGN KEY (room_id) REFERENCES rooms(room_id)
+        FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE SET NULL
 );

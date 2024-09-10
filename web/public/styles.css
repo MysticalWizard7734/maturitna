@@ -9,6 +9,18 @@ a {
   color: inherit;         /* Inherit color from parent elements */
 }
 
+.navMain {
+  display: flex;
+  justify-content: center;  /* Center the first button (esp) */
+  align-items: center;      /* Vertically center the items */
+  position: relative;       /* Position relative for absolute positioning of the + button */
+}
+
+.navMain .plus-button {
+  position: absolute;
+  right: 0;                /* Align the + button to the right */
+}
+
 /* Center the table within the container */
 .container {
   display: grid;

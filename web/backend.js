@@ -5,17 +5,21 @@ const port = 80;
 
 app.use(express.json());  // Middleware to parse JSON request bodies
 
-const { deleteRow, loadEspData, updateEspRow } = require('./database_backend_operations');
+const { deleteRow, loadTableData, updateEspRow, updateRoomsRow } = require('./database_backend_operations');
 
 const idColumnMappings = {
   esp: 'esp_id',
-  room: 'room_id',
+  rooms: 'room_id',
   // TODO add the colours table
 };
 
 // Endpoint to get all rows of a specific table
 app.get('/data', (req, res) => {
-  loadEspData(req, res);
+  loadTableData('esp', req, res);
+});
+
+app.get('/room-data', (req, res) => {
+  loadTableData('rooms', req, res);
 });
 
 app.delete('/delete/:tableName/:id', async (req, res) => {
@@ -35,6 +39,40 @@ app.delete('/delete/:tableName/:id', async (req, res) => {
       res.status(404).json({ message: 'Row not found' });
     }
   } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/updateRoomsRow', async (req, res) => {
+  data = req.body;
+  try {
+    const success = await updateRoomsRow(data);
+    if (success) {
+      res.status(200).json({ message: 'Row edited successfully' });
+    } else {
+      res.status(404).json({ message: 'Row not found' });
+    }
+  } catch (err) {
+    if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+      console.log('Sending client error response');
+      console.log(err.message);
+      return res.status(400).json({ message: err.message });
+    }
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/generate-table', async (req, res) =>{
+  data = req.body;
+  try{
+    const success = await generateRoom();
+    if (success) {
+      res.status(200).json({ message: 'Row edited successfully' });
+    } else {
+      res.status(404).json({ message: 'Row not found' });
+    }
+  }
+  catch (err) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });

@@ -8,7 +8,7 @@ async function generateTable() {
     const response = await fetch('/data');      //request na /data endpoint
     const data = await response.json();         //data sa parsne do premennej data
     const dataDiv = document.getElementById('data');    // Get the HTML element with the ID 'data' to insert the fetched table data into it
-    dataDiv.innerHTML = '';
+    dataDiv.innerHTML = ''; //wipe  it
 
     if (data.length > 0) {
         const table = document.createElement('table');  // creatne elementy table, thead, tbody aby sa do nich mohli vkladat data
@@ -31,8 +31,8 @@ async function generateTable() {
         data.forEach(row => {
             const tr = document.createElement('tr');    //generuje tabulku
             Object.entries(row).forEach(([key, value]) => {
-                console.log("Key: " + key);
-                console.log("Value: " + value);
+                /*console.log("Key: " + key);
+                console.log("Value: " + value);*/
 
                 const td = document.createElement('td');
 
@@ -80,10 +80,17 @@ async function generateTable() {
             delete_button.addEventListener('click', async (event) => {
                 const tableName = event.target.closest('button').dataset.table;
                 const id = event.target.closest('button').dataset.esp_id;
-                await delete_row(tableName, id);
-                //generateTable();  //refresh table
 
-                event.target.closest('tr').remove();    //namiesto refreshnutia celej tabulky mozem vymazat najblizsi riadok
+                const confirmed = window.confirm("Are you sure you want to delete this module? \nThis action can not be reverted. \nModule will heve to be reconfigured.");
+
+                if (confirmed) {
+                    // If the user clicks "OK", proceed with deletion
+                    await delete_row(tableName, id);
+                    event.target.closest('tr').remove();    // Remove the table row after deletion
+                } else {
+                    // If the user clicks "Cancel", do nothing
+                    console.log("Deletion cancelled by user.");
+                }
             });
 
             let edit_state = false;
@@ -91,7 +98,7 @@ async function generateTable() {
                 const row = event.target.closest('tr');
 
                 edit_button.style.backgroundColor = (edit_state) ? 'rgb(242, 242, 242)' : 'rgb(128, 192, 128)';
-                if (edit_state) edit_row(row);
+                if (edit_state) edit_esp_row(row);
 
                 row.querySelectorAll('td').forEach(td => {
                     if (td.dataset.key !== 'esp_id' && td.dataset.key !== 'Actions') { // Make all cells editable except for IDs

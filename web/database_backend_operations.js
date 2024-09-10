@@ -2,6 +2,7 @@ const pool = require('./db'); // Import the pool from db.js
 
 async function deleteRow(tableName, idColumn, idValue) {
     const query = `DELETE FROM \`${tableName}\` WHERE \`${idColumn}\` = ?`;
+    console.log(query);
     try {
         const [result] = await pool.execute(query, [idValue]);
         console.log(`Deleted rows: ${result.affectedRows}`);
@@ -12,9 +13,8 @@ async function deleteRow(tableName, idColumn, idValue) {
     }
 }
 
-async function loadEspData(req, res) {
-    const tableName = 'esp';
-    const query = `SELECT * FROM ${tableName}`;
+async function loadTableData(table, req, res) {
+    const query = `SELECT * FROM ${table}`;
 
     try {
         const [result] = await pool.execute(query);
@@ -41,8 +41,6 @@ async function updateEspRow(data) {
     else if (room_id === '') room_id = null;
     else room_id = oldValues.room_id;
 
-    esp_name = esp_name === '' ? null : esp_name
-
     module_type_ID = module_type_ID.toUpperCase();
 
     if (module_type_ID === '') module_type_ID = null;
@@ -52,9 +50,14 @@ async function updateEspRow(data) {
     else module_type_ID = oldValues.module_type_ID;
 
     number_of_LEDs = isNaN(parseInt(number_of_LEDs, 10)) ? oldValues.number_of_LEDs : parseInt(number_of_LEDs, 10);
-    room_id = isNaN(parseInt(room_id, 10)) ? oldValues.room_id : parseInt(room_id, 10);
-    esp_name = esp_name.trim() === '' ? null : esp_name.trim();
 
+    room_id = isNaN(parseInt(room_id, 10)) ? oldValues.room_id : parseInt(room_id, 10);
+
+
+    console.log(esp_name);
+    esp_name = (esp_name.trim() === '') ? null : esp_name.trim();
+    console.log(esp_name);
+    
     const updateQuery = `
     UPDATE esp 
     SET 
@@ -76,4 +79,49 @@ async function updateEspRow(data) {
     }
 }
 
-module.exports = { deleteRow, loadEspData, updateEspRow };
+
+async function updateRoomsRow(data) {
+    console.log('Rooms row updating');
+
+    console.log(data);
+
+    let { room_id, room_name } = data;
+
+    console.log(room_id);
+    console.log(room_name);
+
+    room_name = (room_name.trim() === '') ? null : room_name.trim();
+    
+    const updateQuery = `
+    UPDATE rooms 
+    SET 
+        room_name = ?
+    WHERE 
+        room_id = ?`;
+
+    try {
+        const [result] = await pool.execute(updateQuery, [room_name, room_id]);
+        console.log(`Updated row: ${result.affectedRows}`);
+        return result.affectedRows > 0;
+    }
+    catch (err) {
+        console.error('Error executing update query:', err);
+        throw err;
+    }
+}
+
+async function generateRoom(){
+    const query = `INSERT INTO rooms () VALUES ()`;
+
+    try {
+        const [result] = await pool.execute(query);
+        console.log(`Updated row: ${result.affectedRows}`);
+        return result.affectedRows > 0;
+    }
+    catch (err) {
+        console.error('Error executing update query:', err);
+        throw err;
+    }
+}
+
+module.exports = { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom };
