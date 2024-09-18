@@ -39,9 +39,9 @@ async function edit_esp_row(row) {
             body: JSON.stringify({   // Ensure you properly stringify the body
                 esp_id: columnValues[0],
                 esp_name: columnValues[1],
-                number_of_LEDs: columnValues[2],
-                module_type_ID: columnValues[3],
-                room_id: columnValues[4]
+                module_type_ID: columnValues[2],
+                room_id: columnValues[3],
+                number_of_LEDs: columnValues[4]
             }),
         });
 

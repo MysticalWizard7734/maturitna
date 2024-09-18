@@ -14,7 +14,15 @@ async function deleteRow(tableName, idColumn, idValue) {
 }
 
 async function loadTableData(table, req, res) {
-    const query = `SELECT * FROM ${table}`;
+
+    const queryRooms = `SELECT * FROM rooms`;
+
+    const queryEsp = `SELECT esp.esp_id, esp.esp_name, module_types.type_name, room_id, number_of_LEDs.number_of_LEDs, module_types.type_name
+                      FROM esp
+                      LEFT JOIN number_of_LEDs ON number_of_LEDs.esp_id = esp.esp_id
+                      LEFT JOIN module_types ON module_types.module_type_ID = esp.module_type_ID;`;
+
+    const query = (table === 'rooms') ? queryRooms : queryEsp;
 
     try {
         const [result] = await pool.execute(query);
@@ -26,50 +34,122 @@ async function loadTableData(table, req, res) {
 }
 
 async function updateEspRow(data) {
-    console.log('Esp row updating');
+    let {esp_id, esp_name, number_of_LEDs, module_type_ID, room_id} = data;
 
-    let { esp_id, esp_name, number_of_LEDs, module_type_ID, room_id } = data;
+    //get old values to use if new values are of incorrect type
+    const queryOldSelect = `
+        SELECT esp.esp_id, esp.esp_name, number_of_LEDs.number_of_LEDs, esp.module_type_ID, esp.room_id 
+        FROM esp
+        LEFT JOIN number_of_LEDs ON esp.esp_id = number_of_LEDs.esp_id
+        WHERE esp.esp_id = ?;
+    `;
 
-    const [row] = await pool.execute('SELECT * FROM esp WHERE esp.esp_id = ?', [esp_id]);
-    const oldValues = row[0];  // Get the first row from the result
+    let oldData;
+    try {
+        [oldData] = await pool.execute(queryOldSelect, [esp_id]);
+    }
+    catch (err) {
+        console.error('Error reading old values:', err);
+        throw err;
+    }
+    let { esp_id: old_esp_id, esp_name: old_esp_name, number_of_LEDs: old_number_of_LEDs, module_type_ID: old_module_type_ID, room_id: old_room_id } = oldData[0];
 
-    if (!isNaN(parseInt(number_of_LEDs, 10))) number_of_LEDs = parseInt(number_of_LEDs, 10);
-    else if (number_of_LEDs === '') number_of_LEDs = null;
-    else number_of_LEDs = oldValues.number_of_LEDs;
+    const queryMainInsert = `
+        UPDATE esp 
+        SET 
+            esp_name = ?,
+            module_type_id = ?,
+            room_id = ?
+        WHERE 
+            esp_id = ?;
+        `;
+
+    if(module_type_ID === 'RGB') module_type_ID = 0;
+    else if(module_type_ID === 'REL') module_type_ID = 1;
+    else if(module_type_ID === '') module_type_ID = null;
+    else module_type_ID = old_module_type_ID;
 
     if (!isNaN(parseInt(room_id, 10))) room_id = parseInt(room_id, 10);
     else if (room_id === '') room_id = null;
-    else room_id = oldValues.room_id;
+    else room_id = old_room_id;
 
-    module_type_ID = module_type_ID.toUpperCase();
+    const checkForRoomId = `
+    SELECT room_id 
+    FROM rooms
+    WHERE room_id = ?
+    `;
 
-    if (module_type_ID === '') module_type_ID = null;
-    else if (module_type_ID === 'REL') module_type_ID = true;
-    else if (module_type_ID === 'RGB') module_type_ID = false;
-    else if (module_type_ID === '') module_type_ID = null;
-    else module_type_ID = oldValues.module_type_ID;
+    let roomIdOutput;
+    try {
+        [roomIdOutput] = await pool.execute(checkForRoomId, [room_id]);
+    }
+    catch (err) {
+        console.error('Error reading room IDs:', err);
+        throw err;
+    }
+    if (roomIdOutput.length === 0) room_id = old_room_id;
 
-    number_of_LEDs = isNaN(parseInt(number_of_LEDs, 10)) ? oldValues.number_of_LEDs : parseInt(number_of_LEDs, 10);
+    if (!isNaN(parseInt(number_of_LEDs, 10))) number_of_LEDs = parseInt(number_of_LEDs, 10);
+    else if (number_of_LEDs === '') number_of_LEDs = null;
+    else number_of_LEDs = old_number_of_LEDs;
 
-    room_id = isNaN(parseInt(room_id, 10)) ? oldValues.room_id : parseInt(room_id, 10);
+    let moduleEditQuery;
 
+    if(module_type_ID === 0){
+        console.log(module_type_ID);
+        console.log(old_module_type_ID);
+        if(old_module_type_ID !== 0){
+            //if module type changed from something else to 0, create a row in number of leds, assign it a value
+            moduleEditQuery = `
+            INSERT INTO number_of_LEDs (esp_id, number_of_LEDs) VALUES (?, ?);
+            `;
+            try {
+                pool.execute(moduleEditQuery, [esp_id, number_of_LEDs]);
+            }
+            catch (err) {
+                console.error('Error inserting row into number_of_LEDs table:', err);
+                throw err;
+            }
+        }
+        else{
+            //like first option, but update it instead of creating a new row
+            moduleEditQuery = `
+            UPDATE number_of_LEDs
+            SET 
+                number_of_LEDs = ?
+            WHERE esp_id = ?;
+            `;
+            try {
+                pool.execute(moduleEditQuery, [number_of_LEDs, esp_id]);
+            }
+            catch (err) {
+                console.error('Error updating row in number_of_LEDs table:', err);
+                throw err;
+            }
+        }  
+    }
+    else if(module_type_ID !== 0 && old_module_type_ID === 0) {
+        //if module type changed from 0 to something else, delet coresponding row in number of leds
+        moduleEditQuery = `
+        DELETE FROM number_of_LEDs
+        WHERE esp_id = ?;
+        `;
+        try {
+            pool.execute(moduleEditQuery, [ esp_id]);
+        }
+        catch (err) {
+            console.error('Error deleting row from number_of_LEDs table:', err);
+            throw err;
+        }
+    }
 
-    console.log(esp_name);
-    esp_name = (esp_name.trim() === '') ? null : esp_name.trim();
-    console.log(esp_name);
-    
-    const updateQuery = `
-    UPDATE esp 
-    SET 
-        esp_name = ?, 
-        number_of_LEDs = ?, 
-        module_type_ID = ?, 
-        room_id = ? 
-    WHERE 
-        esp_id = ?`;
+    /*
+    INSERT INTO number_of_LEDs (number_of_LEDs) VALUES (${number_of_LEDs})
+    WHERE esp.esp_id = ?; 
+    */
 
     try {
-        const [result] = await pool.execute(updateQuery, [esp_name, number_of_LEDs, module_type_ID, room_id, esp_id]);
+        const [result] = await pool.execute(queryMainInsert, [esp_name, module_type_ID, room_id, esp_id]);
         console.log(`Updated row: ${result.affectedRows}`);
         return result.affectedRows > 0;
     }
@@ -91,7 +171,7 @@ async function updateRoomsRow(data) {
     console.log(room_name);
 
     room_name = (room_name.trim() === '') ? null : room_name.trim();
-    
+
     const updateQuery = `
     UPDATE rooms 
     SET 
@@ -110,12 +190,13 @@ async function updateRoomsRow(data) {
     }
 }
 
-async function generateRoom(){
+async function generateRoom() {
+    console.log('Generating a new room');
     const query = `INSERT INTO rooms () VALUES ()`;
 
     try {
         const [result] = await pool.execute(query);
-        console.log(`Updated row: ${result.affectedRows}`);
+        console.log(`Generated row: ${result.affectedRows}`);
         return result.affectedRows > 0;
     }
     catch (err) {

@@ -5,7 +5,7 @@ const port = 80;
 
 app.use(express.json());  // Middleware to parse JSON request bodies
 
-const { deleteRow, loadTableData, updateEspRow, updateRoomsRow } = require('./database_backend_operations');
+const { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom } = require('./database_backend_operations');
 
 const idColumnMappings = {
   esp: 'esp_id',
@@ -66,8 +66,9 @@ app.post('/generate-table', async (req, res) =>{
   data = req.body;
   try{
     const success = await generateRoom();
+    console.log(success);
     if (success) {
-      res.status(200).json({ message: 'Row edited successfully' });
+      res.status(200).json({ message: 'Row generated successfully' });
     } else {
       res.status(404).json({ message: 'Row not found' });
     }

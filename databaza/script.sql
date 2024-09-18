@@ -3,10 +3,10 @@ CREATE DATABASE smart_data;
 
 USE smart_data;
 
-DROP TABLE IF EXISTS module_types, rooms, esp;
+DROP TABLE IF EXISTS module_types, rooms, esp, number_of_LEDs;
 
 CREATE TABLE module_types (
-    module_type_ID bit PRIMARY KEY,
+    module_type_ID int PRIMARY KEY,
     type_name char(3)
 );
 
@@ -19,16 +19,17 @@ CREATE TABLE rooms (
     room_name varchar(50)
 );
 
-INSERT INTO rooms () VALUES ();
-INSERT INTO rooms () VALUES ();
-INSERT INTO rooms () VALUES ();
-
 CREATE TABLE esp (
     esp_id char(14) PRIMARY KEY,
     esp_name varchar(20),
-    number_of_LEDs int,
-    module_type_ID bit,
+    module_type_ID int,
         FOREIGN KEY (module_type_ID) REFERENCES module_types(module_type_ID),
     room_id int,
         FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE SET NULL
+);
+
+CREATE TABLE number_of_LEDs(
+    esp_id char(14) PRIMARY KEY,
+        FOREIGN KEY (esp_id) REFERENCES esp(esp_id),
+    number_of_LEDs int
 );
