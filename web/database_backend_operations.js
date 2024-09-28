@@ -34,7 +34,7 @@ async function loadTableData(table, req, res) {
 }
 
 async function updateEspRow(data) {
-    let {esp_id, esp_name, number_of_LEDs, module_type_ID, room_id} = data;
+    let { esp_id, esp_name, number_of_LEDs, module_type_ID, room_id } = data;
 
     //get old values to use if new values are of incorrect type
     const queryOldSelect = `
@@ -64,10 +64,8 @@ async function updateEspRow(data) {
             esp_id = ?;
         `;
 
-    if(module_type_ID === 'RGB') module_type_ID = 0;
-    else if(module_type_ID === 'REL') module_type_ID = 1;
-    else if(module_type_ID === '') module_type_ID = null;
-    else module_type_ID = old_module_type_ID;
+    if (module_type_ID === 'RGB') module_type_ID = 0;
+    else if (module_type_ID === 'REL') module_type_ID = 1;
 
     if (!isNaN(parseInt(room_id, 10))) room_id = parseInt(room_id, 10);
     else if (room_id === '') room_id = null;
@@ -95,58 +93,24 @@ async function updateEspRow(data) {
 
     let moduleEditQuery;
 
-    if(module_type_ID === 0){
-        console.log(module_type_ID);
-        console.log(old_module_type_ID);
-        if(old_module_type_ID !== 0){
-            //if module type changed from something else to 0, create a row in number of leds, assign it a value
-            moduleEditQuery = `
-            INSERT INTO number_of_LEDs (esp_id, number_of_LEDs) VALUES (?, ?);
-            `;
-            try {
-                pool.execute(moduleEditQuery, [esp_id, number_of_LEDs]);
-            }
-            catch (err) {
-                console.error('Error inserting row into number_of_LEDs table:', err);
-                throw err;
-            }
-        }
-        else{
-            //like first option, but update it instead of creating a new row
-            moduleEditQuery = `
+    if (module_type_ID === 0) {
+
+        moduleEditQuery = `
             UPDATE number_of_LEDs
             SET 
                 number_of_LEDs = ?
             WHERE esp_id = ?;
             `;
-            try {
-                pool.execute(moduleEditQuery, [number_of_LEDs, esp_id]);
-            }
-            catch (err) {
-                console.error('Error updating row in number_of_LEDs table:', err);
-                throw err;
-            }
-        }  
-    }
-    else if(module_type_ID !== 0 && old_module_type_ID === 0) {
-        //if module type changed from 0 to something else, delet coresponding row in number of leds
-        moduleEditQuery = `
-        DELETE FROM number_of_LEDs
-        WHERE esp_id = ?;
-        `;
+
         try {
-            pool.execute(moduleEditQuery, [ esp_id]);
+            pool.execute(moduleEditQuery, [number_of_LEDs, esp_id]);
         }
         catch (err) {
-            console.error('Error deleting row from number_of_LEDs table:', err);
+            console.error('Error updating row in number_of_LEDs table:', err);
             throw err;
         }
-    }
 
-    /*
-    INSERT INTO number_of_LEDs (number_of_LEDs) VALUES (${number_of_LEDs})
-    WHERE esp.esp_id = ?; 
-    */
+    }
 
     try {
         const [result] = await pool.execute(queryMainInsert, [esp_name, module_type_ID, room_id, esp_id]);

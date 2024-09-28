@@ -31,25 +31,12 @@ async function generateTable() {
         data.forEach(row => {
             const tr = document.createElement('tr');    //generuje tabulku
             Object.entries(row).forEach(([key, value]) => {
-                /*console.log("Key: " + key);
-                console.log("Value: " + value);*/
 
                 const td = document.createElement('td');
 
-                if (key === 'module_type_ID') {
-                    // Extract the first element of the data array inside the Buffer object
-                    try {
-                        const bufferValue = value.data[0];
-                        td.textContent = bufferValue ? 'REL' : 'RGB';
-                    }
-                    catch {
-                        console.log('Buffer is null')
-                        td.textContent = value;
-                    }
-                }
-                else {
-                    td.textContent = value;
-                }
+                if (key === 'number_of_LEDs' && row.type_name !== 'RGB') td.textContent = '-';
+                else td.textContent = value;
+
 
                 td.dataset.key = key;  // Set the data-key attribute
                 tr.appendChild(td);
@@ -101,9 +88,12 @@ async function generateTable() {
                 if (edit_state) edit_esp_row(row);
 
                 row.querySelectorAll('td').forEach(td => {
-                    if (td.dataset.key !== 'esp_id' && td.dataset.key !== 'Actions') { // Make all cells editable except for IDs
-                        td.contentEditable = (td.contentEditable === "true") ? "false" : "true";
-                    }
+                    if (!(
+                        td.dataset.key === 'esp_id' || 
+                        td.dataset.key === 'Actions' || 
+                        td.dataset.key === 'type_name' || 
+                        (td.dataset.key === 'number_of_LEDs' && td.textContent === '-'))
+                      ) td.contentEditable = (td.contentEditable === "true") ? "false" : "true";
                 });
                 edit_state = !edit_state;
             });
