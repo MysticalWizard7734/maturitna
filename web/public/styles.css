@@ -4,6 +4,10 @@ table {
   border-collapse: collapse; /* Ensures borders are not doubled */
 }
 
+body {
+  font-size: 1.6em; /* Increase the base font size */
+}
+
 a {
   text-decoration: none;
   color: inherit;         /* Inherit color from parent elements */
@@ -22,12 +26,11 @@ a {
 }
 
 /* Center the table within the container */
+
 .container {
   display: grid;
   justify-content: center;
-  transform: scale(1.6); /* Scale up to 200% */
-  transform-origin: top left; /* Scale from the center of the element */
-  width: 62.5%; /* Adjust width to fit scaled content */
+  width: 100%;
 }
 
 /* Center the main title text */
@@ -73,4 +76,28 @@ th {
 
 .delete-button i, .edit-button i {
   font-size: 16px; /* Adjust icon size */
+}
+
+.modal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 300px;
+}
+
+.close {
+  float: right;
+  cursor: pointer;
+  font-size: 25px;
 }

@@ -22,7 +22,7 @@ CREATE TABLE rooms (
 CREATE TABLE esp (
     esp_id char(14) PRIMARY KEY,
     esp_name varchar(20),
-    module_type_ID int IS NOT NULL,
+    module_type_ID int NOT NULL,
         FOREIGN KEY (module_type_ID) REFERENCES module_types(module_type_ID),
     room_id int,
         FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE SET NULL
@@ -30,9 +30,10 @@ CREATE TABLE esp (
 
 CREATE TABLE number_of_LEDs(
     esp_id char(14) PRIMARY KEY,
-        FOREIGN KEY (esp_id) REFERENCES esp(esp_id),
+        FOREIGN KEY (esp_id) REFERENCES esp(esp_id) ON DELETE CASCADE,
     number_of_LEDs int
 );
-
---TODO
---WHEN NEW ESP WITH RGB TYPE IS CONNECTED GENERATE A ROW IN number_of_LEDs row
+/*
+TODO
+WHEN NEW ESP WITH RGB TYPE IS CONNECTED GENERATE A ROW IN number_of_LEDs row
+*/

@@ -13,6 +13,23 @@
     <div class="navMain">
       <button><a href="/esp">esp</a></button>
       <button class="plus-button" id="generateRoomButton"> + </button>
+      
+
+      <div id="roomModal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <span id="closeModal" class="close">&times;</span>
+          <h2>Create New Room</h2>
+          <form id="roomForm">
+            <label for="roomNumber">Room Number:</label>
+            <input type="text" id="roomNumber" name="roomNumber" required><br><br>
+            <label for="roomName">Room Name:</label>
+            <input type="text" id="roomName" name="roomName" required><br><br>
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </div>
+      
+      
     </div>
 
 

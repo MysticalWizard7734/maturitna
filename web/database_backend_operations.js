@@ -1,7 +1,8 @@
 const pool = require('./db'); // Import the pool from db.js
 
 async function deleteRow(tableName, idColumn, idValue) {
-    const query = `DELETE FROM \`${tableName}\` WHERE \`${idColumn}\` = ?`;
+    const query = ` 
+                    DELETE FROM \`${tableName}\` WHERE \`${idColumn}\` = ?`;
     console.log(query);
     try {
         const [result] = await pool.execute(query, [idValue]);
