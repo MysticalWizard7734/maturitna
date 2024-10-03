@@ -8,6 +8,10 @@ body {
   font-size: 1.6em; /* Increase the base font size */
 }
 
+button {
+  font-size: inherit; /* Inherits the 1.6em from body */
+}
+
 a {
   text-decoration: none;
   color: inherit;         /* Inherit color from parent elements */
@@ -28,6 +32,7 @@ a {
 /* Center the table within the container */
 
 .container {
+  /*transform: scale(1.6);*/
   display: grid;
   justify-content: center;
   width: 100%;

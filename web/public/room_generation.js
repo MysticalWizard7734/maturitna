@@ -33,7 +33,7 @@ roomForm.addEventListener('submit', async (event) => {
 });
 
 async function generateRoom(roomNumber, roomName) {
-    const response = await fetch('/generate-table', {
+    const response = await fetch('/generate-room', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

@@ -18,4 +18,6 @@ LEFT JOIN number_of_LEDs ON number_of_LEDs.esp_id = esp.esp_id
 LEFT JOIN module_types ON module_types.module_type_ID = esp.module_type_ID;
 
 
-/*source /home/mango/maturitna/databaza/generate_rows.sql;*/
+/*
+source /home/mango/maturitna/databaza/generate_rows.sql;
+*/

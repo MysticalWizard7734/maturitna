@@ -155,12 +155,15 @@ async function updateRoomsRow(data) {
     }
 }
 
-async function generateRoom() {
+async function generateRoom(data) {
     console.log('Generating a new room');
-    const query = `INSERT INTO rooms () VALUES ()`;
+    console.log(data);
+
+    let {roomNumber, roomName} = data;
+    const query = `INSERT INTO rooms (room_id, room_name) VALUES (?, ?)`;
 
     try {
-        const [result] = await pool.execute(query);
+        const [result] = await pool.execute(query, [roomNumber, roomName]);
         console.log(`Generated row: ${result.affectedRows}`);
         return result.affectedRows > 0;
     }

@@ -48,6 +48,7 @@ async function generateTable() {
             edit_button.classList.add('edit-button');
             const editIcon = document.createElement('i');   // Create an icon element for Font Awesome
             editIcon.classList.add('fas', 'fa-edit');
+            editIcon.style.fontSize = 'inherit';
             edit_button.appendChild(editIcon);
 
             const delete_button = document.createElement('button'); //delete button
@@ -55,6 +56,7 @@ async function generateTable() {
             delete_button.classList.add('delete-button'); // Add a class for styling
             const trashIcon = document.createElement('i');   // Create an icon element for Font Awesome
             trashIcon.classList.add('fas', 'fa-trash');
+            trashIcon.style.fontSize = 'inherit';
             delete_button.appendChild(trashIcon);
 
             delete_button.dataset.table = 'rooms';
@@ -65,7 +67,7 @@ async function generateTable() {
                 const tableName = event.target.closest('button').dataset.table;
                 const id = event.target.closest('button').dataset.room_id;
 
-                const confirmed = window.confirm("Are you sure you want to delete this room? \nThis action can not be reverted. \nLinked modules will be assigned the value of null.");
+                const confirmed = window.confirm("Skibidi \nAre you sure you want to delete this room? \nThis action can not be reverted.");
     
                 if (confirmed) {
                     // If the user clicks "OK", proceed with deletion

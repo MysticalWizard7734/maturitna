@@ -62,10 +62,10 @@ app.post('/updateRoomsRow', async (req, res) => {
   }
 });
 
-app.post('/generate-table', async (req, res) =>{
+app.post('/generate-room', async (req, res) =>{
   data = req.body;
   try{
-    const success = await generateRoom();
+    const success = await generateRoom(data);
     console.log(success);
     if (success) {
       res.status(200).json({ message: 'Row generated successfully' });

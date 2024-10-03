@@ -15,7 +15,7 @@ INSERT INTO module_types VALUES (0, 'RGB');
 INSERT INTO module_types VALUES (1, 'REL');
 
 CREATE TABLE rooms (
-    room_id int PRIMARY KEY AUTO_INCREMENT,
+    room_id int PRIMARY KEY,
     room_name varchar(50)
 );
 
