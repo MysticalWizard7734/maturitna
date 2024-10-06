@@ -17,16 +17,17 @@ WiFiUDP udp;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-String id = "";
+char id[] = "";
 
 unsigned int localUdpPort = 12345;  // Local port to listen on
-char incomingPacket[255];  // Buffer for incoming packets
-String replyPacket = "";  // Message to send
+char incomingPacket[255];           // Buffer for incoming packets
+char replyPacket[] = "";            // Message to send
 
 String ssid = "";
 String password = "";
+char modType[] = "0";  // 0 = RGB alebo 1 = REL
 
-IPAddress serverIP(0,0,0,0);
+IPAddress serverIP(0, 0, 0, 0);
 
 #include "setID.h"
 #include "setWifi.h"
@@ -39,7 +40,10 @@ void setup() {
 
   setID();
 
-  replyPacket = id;  // Message to send
+  strcpy(replyPacket, id);       // Copy id to replyPacket
+  strcat(replyPacket, '-');  // Append modType to replyPacket
+  strcat(replyPacket, modType);  // Append modType to replyPacket
+
   Serial.print("Nastaveny reply packet: ");
   Serial.println(replyPacket);
 
@@ -47,7 +51,6 @@ void setup() {
   connectWifi();
   findBroker();
   connectToBroker();
-
 }
 
 void loop() {

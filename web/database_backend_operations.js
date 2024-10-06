@@ -173,4 +173,36 @@ async function generateRoom(data) {
     }
 }
 
-module.exports = { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom };
+async function getRoomData(roomId){
+    console.log('Loading data about room number: ' + roomId);
+    let roomData;
+    let correspondingModules;
+    
+
+    const roomNameQuery = `SELECT * FROM rooms WHERE room_id = ?`
+    try {
+        [roomData] = await pool.execute(roomNameQuery, [roomId]);
+        console.log(roomData);
+        console.log('Room name: ' + roomData[0].room_name);
+    }
+    catch(err){
+        console.log('Error loading room name: ' + err);
+    }
+
+    const query = `SELECT * FROM esp WHERE room_id = ?`
+
+    try {
+        [correspondingModules] = await pool.execute(query, [roomId]);
+        console.log('corresponding modules: ');
+        console.log(correspondingModules);
+    }
+    catch(err){
+        console.log('Error loading modules: ' + err);
+    }
+
+    const response = [...roomData, ...correspondingModules];
+
+    return response;
+}
+
+module.exports = { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData };

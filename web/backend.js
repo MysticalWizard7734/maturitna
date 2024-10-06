@@ -5,7 +5,8 @@ const port = 80;
 
 app.use(express.json());  // Middleware to parse JSON request bodies
 
-const { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom } = require('./database_backend_operations');
+const { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData } = require('./database_backend_operations');
+const { domainToASCII } = require('url');
 
 const idColumnMappings = {
   esp: 'esp_id',
@@ -97,6 +98,15 @@ app.post('/updateEspRow', async (req, res) => {
   }
 });
 
+app.get('/api/room/:id', (req, res) => {
+  const roomId = req.params.id;
+  (async () =>{
+  const data = await getRoomData(roomId);
+  res.json(data);
+  })();
+});
+
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 })
@@ -109,8 +119,14 @@ app.get('/rooms', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'rooms.html'));
 })
 
+app.get('/room/:id', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'controls.html'));
+});
+
 // Serve static files from the 'public' directory
-app.use(express.static('public'));
+//app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 
 app.listen(port, () => {

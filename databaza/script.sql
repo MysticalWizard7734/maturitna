@@ -33,7 +33,3 @@ CREATE TABLE number_of_LEDs(
         FOREIGN KEY (esp_id) REFERENCES esp(esp_id) ON DELETE CASCADE,
     number_of_LEDs int
 );
-/*
-TODO
-WHEN NEW ESP WITH RGB TYPE IS CONNECTED GENERATE A ROW IN number_of_LEDs row
-*/
