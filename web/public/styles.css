@@ -106,3 +106,43 @@ th {
   cursor: pointer;
   font-size: 25px;
 }
+
+.controls {
+  display: flex;
+  width: 100%;
+}
+
+.rgb-div, .rel-div {
+  flex: 1;
+  padding: 10px; /* Optional padding */
+}
+
+.rgb-div {
+  background-color: lightblue; /* For visual illustration */
+}
+
+.rel-div {
+  background-color: lightgreen; /* For visual illustration */
+}
+
+.rgb-button{
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.upper-div{
+  display:  flex;
+  padding: 10px;
+  justify-content: center;
+}
+
+.lower-div{
+  display: flex;             /* Enable flexbox */
+  justify-content: space-around; /* Spread buttons evenly */
+  align-items: center;       /* Align items vertically */
+}
+
+.checkbox{
+  margin: 0px 8px 0px 8px ;
+}

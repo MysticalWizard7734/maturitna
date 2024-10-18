@@ -200,7 +200,10 @@ async function getRoomData(roomId){
         console.log('Error loading modules: ' + err);
     }
 
-    const response = [...roomData, ...correspondingModules];
+    const response = {
+        room: roomData[0],
+        modules: correspondingModules
+    };
 
     return response;
 }
