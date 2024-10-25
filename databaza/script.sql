@@ -3,7 +3,7 @@ CREATE DATABASE smart_data;
 
 USE smart_data;
 
-DROP TABLE IF EXISTS module_types, rooms, esp, number_of_LEDs;
+DROP TABLE IF EXISTS number_of_LEDs, esp, rooms, module_types;
 
 CREATE TABLE module_types (
     module_type_ID int PRIMARY KEY,
@@ -22,6 +22,7 @@ CREATE TABLE rooms (
 CREATE TABLE esp (
     esp_id char(14) PRIMARY KEY,
     esp_name varchar(20),
+    isActive TINYINT(1) DEFAULT 1,
     module_type_ID int NOT NULL,
         FOREIGN KEY (module_type_ID) REFERENCES module_types(module_type_ID),
     room_id int,
