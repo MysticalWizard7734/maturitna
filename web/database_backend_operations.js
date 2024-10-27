@@ -179,22 +179,18 @@ async function getRoomData(roomId){
     let correspondingModules;
     
 
-    const roomNameQuery = `SELECT * FROM rooms WHERE room_id = ?`
+    const roomNameQuery = `SELECT * FROM rooms WHERE room_id = ?`;
     try {
         [roomData] = await pool.execute(roomNameQuery, [roomId]);
-        console.log(roomData);
-        console.log('Room name: ' + roomData[0].room_name);
     }
     catch(err){
         console.log('Error loading room name: ' + err);
     }
 
-    const query = `SELECT * FROM esp WHERE room_id = ?`
+    const query = `SELECT * FROM esp WHERE room_id = ?`;
 
     try {
         [correspondingModules] = await pool.execute(query, [roomId]);
-        console.log('corresponding modules: ');
-        console.log(correspondingModules);
     }
     catch(err){
         console.log('Error loading modules: ' + err);
@@ -208,4 +204,22 @@ async function getRoomData(roomId){
     return response;
 }
 
-module.exports = { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData };
+async function changeActiveState(esp_id){
+
+    const query = `UPDATE esp SET isActive = 1 - isActive WHERE esp_id = ?`;
+
+    var result = [];
+
+    try{
+        [result] = await pool.execute(query, [esp_id]);
+        console.log(result.info);
+    }
+    catch(err){
+        console.log('Error changing state: ' + err);
+        result = err;
+    }
+
+    return result;
+}
+
+module.exports = { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState };

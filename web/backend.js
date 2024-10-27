@@ -5,7 +5,8 @@ const port = 80;
 
 app.use(express.json());  // Middleware to parse JSON request bodies
 
-const { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData } = require('./database_backend_operations');
+const { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState } = require('./database_backend_operations');
+const { RGBbroker } = require('./broker_stuff');
 const { domainToASCII } = require('url');
 
 const idColumnMappings = {
@@ -63,9 +64,9 @@ app.post('/updateRoomsRow', async (req, res) => {
   }
 });
 
-app.post('/generate-room', async (req, res) =>{
+app.post('/generate-room', async (req, res) => {
   data = req.body;
-  try{
+  try {
     const success = await generateRoom(data);
     console.log(success);
     if (success) {
@@ -100,9 +101,23 @@ app.post('/updateEspRow', async (req, res) => {
 
 app.get('/api/room/:id', (req, res) => {
   const roomId = req.params.id;
-  (async () =>{
-  const data = await getRoomData(roomId);
-  res.json(data);
+  (async () => {
+    const data = await getRoomData(roomId);
+    res.json(data);
+  })();
+});
+
+app.post('/api/changeModuleState', (req, res) => {
+  (async () => {
+    const result = await changeActiveState(req.body.changeActiveStateOf);
+    res.json(result);
+  })();
+});
+
+app.post('/api/RGBbroker', (req, res) => {
+  (async () => {
+    const result = await RGBbroker(req.body);
+    console.log(req.body);
   })();
 });
 

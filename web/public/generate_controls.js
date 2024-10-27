@@ -34,7 +34,7 @@ function generateContent(data) {
         //generate controls for RGB
         const rgbDiv = document.createElement('div');
         rgbDiv.classList.add('rgb-div');
-        generateRGBDiv(rgbDiv, rgbModules);
+        generateRGBDiv(rgbDiv, rgbModules, roomObject);
         controlsDiv.appendChild(rgbDiv);
     }
     if (hasRel) {
@@ -46,7 +46,7 @@ function generateContent(data) {
     }
 }
 
-function generateRGBDiv(div, rgbModules) {
+function generateRGBDiv(div, rgbModules, roomObject) {
     //checkboxes//
     const upperDiv = document.createElement('div');
     upperDiv.classList.add('upper-div');
@@ -89,7 +89,7 @@ function generateRGBDiv(div, rgbModules) {
     });
     div.appendChild(lowerDiv);
 
-    ledButtonsSetup(rgbButtons);
+    ledButtonsSetup(rgbButtons, roomObject);
 
 }
 
