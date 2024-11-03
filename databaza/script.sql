@@ -19,6 +19,8 @@ CREATE TABLE led_methods (
     method_name varchar(50)
 );
 
+ALTER TABLE led_methods AUTO_INCREMENT = 0;
+
 INSERT INTO led_methods (method_name) VALUES ("none");
 INSERT INTO led_methods (method_name) VALUES ("left to right");
 INSERT INTO led_methods (method_name) VALUES ("right to left");

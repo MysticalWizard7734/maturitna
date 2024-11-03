@@ -5,7 +5,7 @@ const port = 80;
 
 app.use(express.json());  // Middleware to parse JSON request bodies
 
-const { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState } = require('./database_backend_operations');
+const { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState, changeDelay, changeMethod} = require('./database_backend_operations');
 const { RGBbroker } = require('./broker_stuff');
 const { domainToASCII } = require('url');
 
@@ -110,6 +110,20 @@ app.get('/api/room/:id', (req, res) => {
 app.post('/api/changeModuleState', (req, res) => {
   (async () => {
     const result = await changeActiveState(req.body.changeActiveStateOf);
+    res.json(result);
+  })();
+});
+
+app.post('/api/changeDelay', (req, res) => {
+  (async () => {
+    const result = changeDelay(req.body);
+    res.json(result);
+  })();
+});
+
+app.post('/api/changeMethod', (req, res) => {
+  (async () => {
+    const result = changeMethod(req.body);
     res.json(result);
   })();
 });

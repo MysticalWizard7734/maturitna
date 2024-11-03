@@ -20,12 +20,7 @@ function ledButtonsSetup(rgbButtons, roomObject) {
 }
 
 function sendColor(r, g, b, roomObject) {
-    console.log('Colours: ');
-    console.log(r);
-    console.log(g);
-    console.log(b);
-    console.log('Room: ');
-    console.log(roomObject.room_id);
+    console.log('Colours: ' + r + g + b);
     //fetch to backend
     fetch('/api/RGBbroker', {
         method: 'POST',
@@ -42,13 +37,7 @@ function sendColor(r, g, b, roomObject) {
 }
 
 function checkboxSetup(rgbCheckboxes) {
-
-    console.log(rgbCheckboxes);
-
-
     rgbCheckboxes.forEach(rgbCheckbox => {
-        console.log('Current checkbox: ');
-        console.log(rgbCheckbox);
         rgbCheckbox.addEventListener("change", function () {
             changeCheckboxAtServer(rgbCheckbox);
         })
@@ -56,9 +45,6 @@ function checkboxSetup(rgbCheckboxes) {
 }
 
 function changeCheckboxAtServer(rgbCheckbox) {
-    //make a fetch that will send the new checkbox data to the server
-    console.log(rgbCheckbox.id);
-
     fetch('/api/changeModuleState', {
         method: 'POST',
         headers: {
@@ -70,28 +56,49 @@ function changeCheckboxAtServer(rgbCheckbox) {
     });
 }
 
-function inputFieldEventListener(inputField) {
+function inputFieldEventListener(inputField, room_id) {
     inputField.addEventListener('blur', function () {
-        console.log("Publishing on blur:", inputField.value);
         if (!isNaN(parseInt(inputField.value, 10))) {
-            changeDelayAtServer(inputField.value);
+            changeDelayAtServer(inputField.value, room_id);
         }
     });
 
 }
 
-function changeDelayAtServer(value) {
-    //fetch the new delay to server
+function changeDelayAtServer(value, room_id) {
+
+    fetch('/api/changeDelay', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            room_id: room_id,
+            LED_delay: value
+        })
+    });
 }
 
-function buttonMethodEvnetListener(methodButtons) {
+function buttonMethodEvnetListener(methodButtons, room_id) {
     methodButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Remove 'selected' class from all buttons
             methodButtons.forEach(btn => btn.classList.remove('selected'));
-
-            // Add 'selected' class to the clicked button
             button.classList.add('selected');
+            changeLedMethodAtServer(button.id, room_id)
         });
+    });
+}
+
+function changeLedMethodAtServer(LED_method, room_id){
+
+    fetch('/api/changeMethod', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            room_id: room_id,
+            LED_method: LED_method
+        })
     });
 }

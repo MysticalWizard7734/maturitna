@@ -237,4 +237,33 @@ async function selectActiveEsps(room_id){
     return result;
 }
 
-module.exports = { selectActiveEsps, deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState };
+async function changeDelay(req) {
+    const query = `UPDATE rooms SET LED_delay = ? WHERE room_id = ? `;
+
+    var result = [];
+
+    try{
+        [result] = await pool.execute(query, [req.LED_delay, req.room_id]);
+    }
+    catch(err){
+        console.log('Error');
+    }
+    return result.info;
+}
+
+async function changeMethod(req) {
+    const query = `UPDATE rooms SET LED_method = ? WHERE room_id = ? `;
+
+    var result = [];
+
+    try{
+        [result] = await pool.execute(query, [req.LED_method, req.room_id]);
+        console.log(result.info);
+    }
+    catch(err){
+        console.log('Error');
+    }
+    return result.info; 
+}
+
+module.exports = { selectActiveEsps, deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState, changeDelay, changeMethod};

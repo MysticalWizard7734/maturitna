@@ -6,15 +6,28 @@ table {
 
 body {
   font-size: 1.6em; /* Increase the base font size */
+  background-color: #242424;
+  color: antiquewhite;
 }
 
 button {
+  margin: 20px;
+  padding: 5px;
   font-size: inherit; /* Inherits the 1.6em from body */
+  background-color: #444; /* Set a darker button background */
+  color: antiquewhite; /* Button text color */
+  border: none; /* Remove default button border */
+  border-radius: 5px; /* Rounded corners for buttons */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+button:hover {
+  background-color: #555; /* Lighter button on hover */
 }
 
 a {
   text-decoration: none;
-  color: inherit;         /* Inherit color from parent elements */
+  color: antiquewhite;         /* Inherit text color */
 }
 
 .navMain {
@@ -30,9 +43,7 @@ a {
 }
 
 /* Center the table within the container */
-
 .container {
-  /*transform: scale(1.6);*/
   display: grid;
   justify-content: center;
   width: 100%;
@@ -45,26 +56,27 @@ a {
 
 /* Style table headers and cells */
 th, td {
-  border: 1px solid black; /* Single border for all cells */
+  border: 1px solid #888; /* Darker border for visibility */
   padding: 8px;
   text-align: left;
 }
 
 /* Style table headers specifically */
 th {
-  background-color: #f2f2f2;
+  background-color: #333; /* Darker background for headers */
+  color: antiquewhite; /* Header text color */
 }
+
 /* Style the actions cell for horizontal centering */
 .actions-Cell {
   text-align: center; /* Center horizontally */
   vertical-align: middle; /* Center vertically, if applicable */
 }
 
-/* Style the delete button */
+/* Style the delete and edit buttons */
 .delete-button, .edit-button {
+  background-color: #888; /* Red for delete button */
   color: white; /* White icon color */
-  border: 1px; /* Border */
-  border-color: black;
   border-radius: 4px; /* Rounded corners */
   padding: 5px 10px; /* Padding around the icon */
   cursor: pointer; /* Pointer cursor on hover */
@@ -72,11 +84,15 @@ th {
 }
 
 .delete-button:hover {
-  background-color: rgb(192, 128, 128); /* Darker red on hover */
+  background-color: #a8322e; /* Darker red on hover */
+}
+
+.edit-button {
+  background-color: #888; /* Green for edit button */
 }
 
 .edit-button:hover {
-  background-color: rgb(128, 192, 128);
+  background-color: #219653; /* Darker green on hover */
 }
 
 .delete-button i, .edit-button i {
@@ -117,38 +133,32 @@ th {
   padding: 10px; /* Optional padding */
 }
 
-.rgb-div {
-  background-color: lightblue; /* For visual illustration */
-}
-
-.rel-div {
-  background-color: lightgreen; /* For visual illustration */
-}
-
-.rgb-button{
+.rgb-button {
   padding: 30px;
   border-radius: 20px;
   border: none;
   cursor: pointer;
+  background-color: #555; /* Consistent button background */
+  color: antiquewhite; /* Button text color */
 }
 
-.upper-div{
-  display:  flex;
+.upper-div {
+  display: flex;
   padding: 10px;
   justify-content: center;
 }
 
-.lower-div{
+.lower-div {
   display: flex;             /* Enable flexbox */
   justify-content: space-around; /* Spread buttons evenly */
   align-items: center;       /* Align items vertically */
 }
 
-.checkbox{
-  margin: 0px 8px 0px 8px ;
+.checkbox {
+  margin: 0px 8px;
 }
 
-.method-button{
+.method-button {
   width: 90px; /* Set desired width */
   height: 40px; /* Set desired height */
   display: flex;
@@ -156,11 +166,13 @@ th {
   align-items: center;
   padding: 20px;
   border-radius: 15px;
-  border: none;
+  border: 1px solid #444; /* 1px is the width, solid is the style, and antiquewhite is the color */
   cursor: pointer;
+  background-color: #242424; /* Set button background */
+  color: antiquewhite; /* Button text color */
 }
 
-.middle-div{
+.middle-div {
   display: flex;             /* Enable flexbox */
   justify-content: space-around; /* Spread buttons evenly */
   align-items: center;       /* Align items vertically */
@@ -169,14 +181,10 @@ th {
 }
 
 .method-button.selected {
-  background-color: #242424; /* Change background for selected button */
-  color: white; /* Change text color for selected button */
-}
-
-.method-button.selected svg {
-  filter: invert(1); /* Invert the color of the SVG */
+  background-color: #444;
+  color: antiquewhite; /* Change text color for selected button */
 }
 
 .method-button.selected .fa {
-  color: white; /* Change Font Awesome icon color to white */
+  color: antiquewhite; /* Change Font Awesome icon color to antiquewhite */
 }
