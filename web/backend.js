@@ -117,7 +117,6 @@ app.post('/api/changeModuleState', (req, res) => {
 app.post('/api/RGBbroker', (req, res) => {
   (async () => {
     const result = await RGBbroker(req.body);
-    console.log(req.body);
   })();
 });
 

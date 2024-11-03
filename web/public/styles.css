@@ -126,8 +126,8 @@ th {
 }
 
 .rgb-button{
-  padding: 20px;
-  border-radius: 15px;
+  padding: 30px;
+  border-radius: 20px;
   border: none;
   cursor: pointer;
 }
@@ -146,4 +146,37 @@ th {
 
 .checkbox{
   margin: 0px 8px 0px 8px ;
+}
+
+.method-button{
+  width: 90px; /* Set desired width */
+  height: 40px; /* Set desired height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+}
+
+.middle-div{
+  display: flex;             /* Enable flexbox */
+  justify-content: space-around; /* Spread buttons evenly */
+  align-items: center;       /* Align items vertically */
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+.method-button.selected {
+  background-color: #242424; /* Change background for selected button */
+  color: white; /* Change text color for selected button */
+}
+
+.method-button.selected svg {
+  filter: invert(1); /* Invert the color of the SVG */
+}
+
+.method-button.selected .fa {
+  color: white; /* Change Font Awesome icon color to white */
 }

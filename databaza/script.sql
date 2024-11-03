@@ -3,7 +3,7 @@ CREATE DATABASE smart_data;
 
 USE smart_data;
 
-DROP TABLE IF EXISTS number_of_LEDs, esp, rooms, module_types;
+DROP TABLE IF EXISTS number_of_LEDs, esp, rooms, module_types, led_methods;
 
 CREATE TABLE module_types (
     module_type_ID int PRIMARY KEY,
@@ -14,9 +14,24 @@ INSERT INTO module_types VALUES (0, 'RGB');
 
 INSERT INTO module_types VALUES (1, 'REL');
 
+CREATE TABLE led_methods (
+    method_id int PRIMARY KEY AUTO_INCREMENT,
+    method_name varchar(50)
+);
+
+INSERT INTO led_methods (method_name) VALUES ("none");
+INSERT INTO led_methods (method_name) VALUES ("left to right");
+INSERT INTO led_methods (method_name) VALUES ("right to left");
+INSERT INTO led_methods (method_name) VALUES ("edge to center");
+INSERT INTO led_methods (method_name) VALUES ("center to edge");
+INSERT INTO led_methods (method_name) VALUES ("bright up");
+
 CREATE TABLE rooms (
     room_id int PRIMARY KEY,
-    room_name varchar(50)
+    room_name varchar(50),
+    LED_delay int DEFAULT 0,
+    LED_method int DEFAULT 1,
+        FOREIGN KEY (LED_method) REFERENCES led_methods(method_id)
 );
 
 CREATE TABLE esp (

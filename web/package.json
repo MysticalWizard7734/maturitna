@@ -1,7 +1,12 @@
 {
+  "scripts": {
+    "start": "node backend.js",
+    "build": "webpack --mode production"
+  },
   "dependencies": {
     "express": "^4.19.2",
-    "mqtt": "^5.10.1",
+    "lru-cache": "^7.18.3",
+    "mqtt": "^4.3.7",
     "mysql2": "^3.0.0",
     "path": "^0.12.7"
   }

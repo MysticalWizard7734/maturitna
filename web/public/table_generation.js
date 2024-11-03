@@ -47,7 +47,6 @@ async function generateTable() {
             actionsCell.dataset.key = 'Actions';  // Set the data-key attribute
 
             const edit_button = document.createElement('button');    //edit button
-            edit_button.type = 'button';
             edit_button.classList.add('edit-button');
             const editIcon = document.createElement('i');   // Create an icon element for Font Awesome
             editIcon.classList.add('fas', 'fa-edit');
@@ -55,7 +54,6 @@ async function generateTable() {
             edit_button.appendChild(editIcon);
 
             const delete_button = document.createElement('button'); //delete button
-            delete_button.type = 'button';
             delete_button.classList.add('delete-button'); // Add a class for styling
             const trashIcon = document.createElement('i');   // Create an icon element for Font Awesome
             trashIcon.classList.add('fas', 'fa-trash');

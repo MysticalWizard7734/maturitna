@@ -28,7 +28,7 @@ function sendColor(r, g, b, roomObject) {
     console.log(roomObject.room_id);
     //fetch to backend
     fetch('/api/RGBbroker', {
-        method: 'POST', 
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -67,5 +67,31 @@ function changeCheckboxAtServer(rgbCheckbox) {
         body: JSON.stringify({
             changeActiveStateOf: rgbCheckbox.id
         })
+    });
+}
+
+function inputFieldEventListener(inputField) {
+    inputField.addEventListener('blur', function () {
+        console.log("Publishing on blur:", inputField.value);
+        if (!isNaN(parseInt(inputField.value, 10))) {
+            changeDelayAtServer(inputField.value);
+        }
+    });
+
+}
+
+function changeDelayAtServer(value) {
+    //fetch the new delay to server
+}
+
+function buttonMethodEvnetListener(methodButtons) {
+    methodButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove 'selected' class from all buttons
+            methodButtons.forEach(btn => btn.classList.remove('selected'));
+
+            // Add 'selected' class to the clicked button
+            button.classList.add('selected');
+        });
     });
 }

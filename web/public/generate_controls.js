@@ -16,6 +16,8 @@ fetch(`/api/room/${roomId}`)
 function generateContent(data) {
     roomObject = data.room;
     modulesArray = data.modules;
+    console.log('Izba:');
+    console.log(roomObject);
     console.log('Moduly:');
     console.log(modulesArray);
 
@@ -74,6 +76,45 @@ function generateRGBDiv(div, rgbModules, roomObject) {
     div.appendChild(upperDiv);
     checkboxSetup(rgbCheckboxes);
 
+    const middleDiv = document.createElement('div');
+    middleDiv.classList.add('middle-div');
+
+    var inputField = document.createElement('input');
+    inputField.value = roomObject.LED_delay;
+    inputFieldEventListener(inputField);
+
+    console.log(roomObject.LED_method);
+
+    var methodButtons = [];
+    for(let i = 0; i < 6; i++){
+        methodButtons[i] = document.createElement('button');
+        methodButtons[i].classList.add('method-button');
+        methodButtons[i].id = 'method-button-' + i
+    }
+
+    methodButtons[0].innerHTML = ' - ';
+    methodButtons[1].innerHTML = '<i class="fa-solid fa-arrow-right"></i>';
+    methodButtons[2].innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+    methodButtons[3].innerHTML = '<i class="fa-solid fa-arrow-left"><i class="fa-solid fa-arrow-right"></i>';
+    methodButtons[4].innerHTML = '<i class="fa-solid fa-arrow-right"><i class="fa-solid fa-arrow-left"></i>';
+    methodButtons[5].innerHTML = `
+    <svg width="1435" height="788" viewBox="0 0 1435 788" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="646.161" width="142.678" height="357.349" rx="50" fill="black"/>
+        <rect x="1188.71" y="147.184" width="142.678" height="357.349" rx="50" transform="rotate(45 1188.71 147.184)" fill="black"/>
+        <rect x="147.444" y="246.184" width="142.678" height="357.349" rx="50" transform="rotate(-45 147.444 246.184)" fill="black"/>
+        <rect x="0.838867" y="788" width="142.678" height="286.664" rx="50" transform="rotate(-90 0.838867 788)" fill="black"/>
+        <rect x="1147.5" y="788" width="142.678" height="286.664" rx="50" transform="rotate(-90 1147.5 788)" fill="black"/>
+        <rect x="431.49" y="788" width="142.678" height="573.329" rx="50" transform="rotate(-90 431.49 788)" fill="black"/>
+    </svg>`;
+
+    buttonMethodEvnetListener(methodButtons);
+
+    middleDiv.appendChild(inputField);
+    methodButtons.forEach(button => {
+        middleDiv.appendChild(button);
+    });
+    div.appendChild(middleDiv);
+
     //buttons//
     const lowerDiv = document.createElement('div');
     lowerDiv.classList.add('lower-div');
@@ -82,7 +123,7 @@ function generateRGBDiv(div, rgbModules, roomObject) {
     for (let i = 0; i < 8; i++) {
         rgbButtons[i] = document.createElement('button')
         rgbButtons[i].classList.add('rgb-button');
-        rgbButtons[i].id = 'rgb-button-' + i
+        rgbButtons[i].id = 'rgb-button-' + i;
     }
     rgbButtons.forEach(button => {
         lowerDiv.appendChild(button);

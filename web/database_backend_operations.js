@@ -222,4 +222,19 @@ async function changeActiveState(esp_id){
     return result;
 }
 
-module.exports = { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState };
+async function selectActiveEsps(room_id){
+    const query = `SELECT esp_id FROM esp WHERE room_id = ? AND isActive = 1 AND module_type_ID = 0`;
+
+    var result = [];
+
+    try{
+        [result] = await pool.execute(query, [room_id]);
+    }
+    catch(err){
+        console.log('Error selecting esps: ' + err)
+    }
+
+    return result;
+}
+
+module.exports = { selectActiveEsps, deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState };
