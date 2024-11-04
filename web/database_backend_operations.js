@@ -14,24 +14,16 @@ async function deleteRow(tableName, idColumn, idValue) {
     }
 }
 
-async function loadTableData(table, req, res) {
-
-    const queryRooms = `SELECT * FROM rooms`;
-
-    const queryEsp = `SELECT esp.esp_id, esp.esp_name, module_types.type_name, room_id, number_of_LEDs.number_of_LEDs, module_types.type_name
-                      FROM esp
-                      LEFT JOIN number_of_LEDs ON number_of_LEDs.esp_id = esp.esp_id
-                      LEFT JOIN module_types ON module_types.module_type_ID = esp.module_type_ID;`;
-
-    const query = (table === 'rooms') ? queryRooms : queryEsp;
+async function loadTableData(query, params = []) {
+    var result = [];
 
     try {
-        const [result] = await pool.execute(query);
-        res.json(result);
+        [result] = await pool.execute(query, [params]);
     } catch (err) {
         console.error('Error executing load query:', err);
         throw err;
     }
+    return result;
 }
 
 async function updateEspRow(data) {
@@ -222,21 +214,6 @@ async function changeActiveState(esp_id){
     return result;
 }
 
-async function selectActiveEsps(room_id){
-    const query = `SELECT esp_id FROM esp WHERE room_id = ? AND isActive = 1 AND module_type_ID = 0`;
-
-    var result = [];
-
-    try{
-        [result] = await pool.execute(query, [room_id]);
-    }
-    catch(err){
-        console.log('Error selecting esps: ' + err)
-    }
-
-    return result;
-}
-
 async function changeDelay(req) {
     const query = `UPDATE rooms SET LED_delay = ? WHERE room_id = ? `;
 
@@ -266,4 +243,4 @@ async function changeMethod(req) {
     return result.info; 
 }
 
-module.exports = { selectActiveEsps, deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState, changeDelay, changeMethod};
+module.exports = { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState, changeDelay, changeMethod};

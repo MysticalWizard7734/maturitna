@@ -5,9 +5,10 @@ const port = 80;
 
 app.use(express.json());  // Middleware to parse JSON request bodies
 
-const { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState, changeDelay, changeMethod} = require('./database_backend_operations');
+const { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState, changeDelay, changeMethod } = require('./database_backend_operations');
 const { RGBbroker } = require('./broker_stuff');
 const { domainToASCII } = require('url');
+const { query } = require('./db');
 
 const idColumnMappings = {
   esp: 'esp_id',
@@ -16,12 +17,29 @@ const idColumnMappings = {
 };
 
 // Endpoint to get all rows of a specific table
-app.get('/data', (req, res) => {
-  loadTableData('esp', req, res);
+app.get('/data', async (req, res) => {
+  try {
+    const query = `SELECT esp.esp_id, esp.esp_name, module_types.type_name, room_id, number_of_LEDs.number_of_LEDs, module_types.type_name
+                   FROM esp
+                   LEFT JOIN number_of_LEDs ON number_of_LEDs.esp_id = esp.esp_id
+                   LEFT JOIN module_types ON module_types.module_type_ID = esp.module_type_ID;`;
+    const data = await loadTableData(query);
+    res.json(data);
+  } catch (err) {
+    console.error('Error loading ESP data:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
-app.get('/room-data', (req, res) => {
-  loadTableData('rooms', req, res);
+app.get('/room-data', async (req, res) => {
+  try {
+    const query = `SELECT * FROM rooms`;
+    const data = await loadTableData(query);
+    res.json(data);
+  } catch (err) {
+    console.error('Error loading room data:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 app.delete('/delete/:tableName/:id', async (req, res) => {
@@ -128,10 +146,20 @@ app.post('/api/changeMethod', (req, res) => {
   })();
 });
 
-app.post('/api/RGBbroker', (req, res) => {
-  (async () => {
-    const result = await RGBbroker(req.body);
-  })();
+app.post('/api/RGBbroker', async (req, res) => {
+    try {
+        console.log('Message arrived:', req.body); // Use req.body directly to see the parsed object
+        const room_id = req.body.room_id;
+        const r = req.body.r;
+        const g = req.body.g;
+        const b = req.body.b;
+
+        const result = await RGBbroker(room_id, r, g, b);
+        res.status(200).send('Success'); // Send a response back to the client
+    } catch (error) {
+        console.error('Error handling RGBbroker request:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 

@@ -170,6 +170,7 @@ th {
   cursor: pointer;
   background-color: #242424; /* Set button background */
   color: antiquewhite; /* Button text color */
+  overflow: hidden; /* Ensures anything oversized is clipped */
 }
 
 .middle-div {

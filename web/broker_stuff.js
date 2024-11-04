@@ -1,6 +1,7 @@
 const mqtt = require('mqtt');
 
-const { selectActiveEsps } = require('./database_backend_operations');
+const { loadTableData } = require('./database_backend_operations');
+const { query } = require('./db');
 
 const client = mqtt.connect('mqtt://127.0.0.1');
 
@@ -13,26 +14,44 @@ client.on('error', (error) => {
     console.error('Connection error:', error);
 }); 
 
-async function RGBbroker(req){
-    console.log(req);
+async function RGBbroker(room_id, r, g, b){
 
-    const room_id = req.room_id;
+    const query = `SELECT * FROM rooms WHERE room_id = ?`;
 
-    const r = req.r;
-    const g = req.g;
-    const b = req.g;
+    const roomDataArray = await loadTableData(query, room_id);
+    const roomData = roomDataArray[0];
 
-    const esp = await selectActiveEsps(room_id);
+    console.log(roomData);
 
+    const query2 = `SELECT esp.esp_id, number_of_LEDs.number_of_LEDs 
+                    FROM esp 
+                    LEFT JOIN number_of_LEDs ON number_of_LEDs.esp_id = esp.esp_id 
+                    WHERE esp.room_id = ? AND esp.isActive = 1 AND esp.module_type_ID = 0;`;
 
-    var result = [];
+    const espData = await loadTableData(query2, room_id);
 
-    esp.forEach(esp => {
-        console.log(esp.esp_id);
-        client.publish(esp.esp_id, `${r}, ${g}, ${b}`);
+    console.log(espData);
+
+    espData.forEach(esp => {
+        const topic = esp.esp_id;
+        const message = {
+            LED_delay: roomData.LED_delay,
+            LED_method: roomData.LED_method,
+            number_of_LEDs: esp.number_of_LEDs,
+            r: r,
+            g: g,
+            b: b
+        }
+
+        client.publish(topic, JSON.stringify(message), {qos: 0}, (err) => {
+            if(err){
+                console.log('Publish error: ' + err );
+            }
+            else{
+                console.log('Successful publish on topic: ' + topic);
+            }
+        });
     });
-
-    return result;
 }
 
 module.exports = {RGBbroker};

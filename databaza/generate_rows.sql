@@ -30,3 +30,9 @@ LEFT JOIN module_types ON module_types.module_type_ID = esp.module_type_ID;
 source /home/mango/maturitna/databaza/script.sql;
 source /home/mango/maturitna/databaza/generate_rows.sql;
 */
+
+
+SELECT esp.esp_id, number_of_LEDs.number_of_LEDs 
+FROM esp 
+LEFT JOIN number_of_LEDs ON number_of_LEDs.esp_id = esp.esp_id 
+WHERE esp.room_id = 1 AND esp.isActive = 1 AND esp.module_type_ID = 0;

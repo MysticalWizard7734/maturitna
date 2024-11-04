@@ -20,7 +20,7 @@ function ledButtonsSetup(rgbButtons, roomObject) {
 }
 
 function sendColor(r, g, b, roomObject) {
-    console.log('Colours: ' + r + g + b);
+    console.log('Colours: ' + r + ' ' + g + ' ' + b);
     //fetch to backend
     fetch('/api/RGBbroker', {
         method: 'POST',
