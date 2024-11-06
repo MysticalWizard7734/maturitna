@@ -84,16 +84,21 @@ th {
 }
 
 .delete-button:hover {
-  background-color: #a8322e; /* Darker red on hover */
+  background-color: #a83232; /* Darker red on hover */
 }
 
 .edit-button {
-  background-color: #888; /* Green for edit button */
+  background-color: #888;
 }
 
 .edit-button:hover {
-  background-color: #219653; /* Darker green on hover */
+  background-color: #32a832; /* Dark green on hover */
 }
+
+.edit-button.active {
+  background-color: #32a832b4; /* Green when active */
+}
+
 
 .delete-button i, .edit-button i {
   font-size: 16px; /* Adjust icon size */

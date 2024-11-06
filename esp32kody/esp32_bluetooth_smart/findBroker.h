@@ -9,7 +9,7 @@ void findBroker() {
 
     while (serverIP == IPAddress(0, 0, 0, 0)) {
       // Send broadcast message
-      udp.beginPacket(IPAddress(255, 255, 255, 255), localUdpPort);
+      udp.beginPacket(IPAddress(192, 168, 0, 143), localUdpPort);
       udp.print(replyPacket);
       udp.endPacket();
       Serial.println("Broadcast message sent");

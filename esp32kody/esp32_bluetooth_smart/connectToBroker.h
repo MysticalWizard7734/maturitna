@@ -11,16 +11,20 @@ void handleMessage(byte* payload) {
   }
 
 
-  int R = doc["R"];
-  int G = doc["G"];
-  int B = doc["B"];
-
-  for(int i = 0; i < NUM_LEDS; i++){
-    leds[i] = CRGB(R, G, B);
-    //delay(50);
+  // Check if the packet contains the keys for LED control
+  if (doc.containsKey("LED_delay") && doc.containsKey("LED_method") && doc.containsKey("number_of_LEDs")) {
+    if(doc["LED_delay"] != -1) LED_delay = doc["LED_delay"];
+    if(doc["LED_method"] != -1) LED_method = doc["LED_method"];
+    if(doc["number_of_LEDs"] != -1) number_of_LEDs = doc["number_of_LEDs"];
+    
+    setParameters(LED_delay, LED_method, number_of_LEDs);
   }
-
-    FastLED.show();
+  else if (doc.containsKey("r") && doc.containsKey("g") && doc.containsKey("b")) {
+    int r = doc["r"];
+    int g = doc["g"];
+    int b = doc["b"];
+    setColor(r, g, b);
+  }
 }
 
 void callback(char* topic, byte* payload, unsigned int lenght) {

@@ -84,7 +84,7 @@ async function generateTable() {
             edit_button.addEventListener('click', (event) => {
                 const row = event.target.closest('tr');
 
-                edit_button.style.backgroundColor = (edit_state) ? 'rgb(242, 242, 242)' : 'rgb(128, 192, 128)';
+                edit_button.classList.toggle('active', !edit_state); // Toggle class based on edit_state
                 if (edit_state) edit_esp_row(row);
 
                 row.querySelectorAll('td').forEach(td => {

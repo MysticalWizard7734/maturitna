@@ -9,7 +9,7 @@
 #define LED_PIN 4
 #define NUM_LEDS 1000
 
-CRGB leds[NUM_LEDS];
+CRGB leds[60];
 
 Preferences preferences;
 BluetoothSerial SerialBT;
@@ -17,7 +17,12 @@ WiFiUDP udp;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-char id[] = "";
+String id = "";
+
+int LED_delay = preferences.getInt("LED_delay", 0);
+int LED_method = preferences.getInt("LED_method", 0);
+int number_of_LEDs = preferences.getInt("number_of_LEDs", 0);
+int single_led_delay;
 
 unsigned int localUdpPort = 12345;  // Local port to listen on
 char incomingPacket[255];           // Buffer for incoming packets
@@ -33,15 +38,21 @@ IPAddress serverIP(0, 0, 0, 0);
 #include "setWifi.h"
 #include "connectWifi.h"
 #include "findBroker.h"
+#include "handleMessage.h"
 #include "connectToBroker.h"
 
 void setup() {
   Serial.begin(115200);
 
+  if(number_of_LEDs != 0){
+    single_led_delay = LED_delay / number_of_LEDs;
+  }
+  else single_led_delay = 0;
+
   setID();
 
-  strcpy(replyPacket, id);       // Copy id to replyPacket
-  strcat(replyPacket, '-');  // Append modType to replyPacket
+  strcpy(replyPacket, id.c_str());       // Copy id to replyPacket
+  strcat(replyPacket, "-");  // Append modType to replyPacket
   strcat(replyPacket, modType);  // Append modType to replyPacket
 
   Serial.print("Nastaveny reply packet: ");

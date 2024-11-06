@@ -5,7 +5,8 @@ const port = 80;
 
 app.use(express.json());  // Middleware to parse JSON request bodies
 
-const { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState, changeDelay, changeMethod } = require('./database_backend_operations');
+const { deleteRow, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState, changeDelay, changeMethod } = require('./database_backend_operations');
+const { loadTableData } = require('./db_helpers');
 const { RGBbroker } = require('./broker_stuff');
 const { domainToASCII } = require('url');
 const { query } = require('./db');
