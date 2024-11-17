@@ -90,7 +90,9 @@ async function edit_rooms_row(row) {
             },
             body: JSON.stringify({   // Ensure you properly stringify the body
                 room_id: columnValues[0],
-                room_name: columnValues[1]
+                room_name: columnValues[1],
+                LED_delay: columnValues[2],
+                LED_method: columnValues[3]
             }),
         });
 

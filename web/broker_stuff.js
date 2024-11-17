@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
 
-const { loadTableData } = require('./db_helpers');
+const { executeQuery } = require('./db_helpers');
 const { query } = require('./db');
 
 const client = mqtt.connect('mqtt://127.0.0.1');
@@ -19,7 +19,7 @@ async function RGBbroker(room_id, r, g, b){
                     FROM esp
                     WHERE esp.room_id = ? AND esp.isActive = 1 AND esp.module_type_ID = 0;`;
 
-    const espData = await loadTableData(query2, room_id);
+    const espData = await executeQuery(query2, room_id);
 
     console.log(espData);
 
@@ -43,7 +43,6 @@ async function RGBbroker(room_id, r, g, b){
 }
 
 function RGBbrokerData(esp_id, LED_delay, LED_method, number_of_LEDs) {
-    console.log('Mrdat');
     const topic = esp_id;
     const message = {
         LED_delay: LED_delay,

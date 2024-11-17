@@ -1,31 +1,6 @@
 const pool = require('./db'); // Import the pool from db.js
 const { RGBbrokerData } = require('./broker_stuff.js');
-
-async function deleteRow(tableName, idColumn, idValue) {
-    const query = ` 
-                    DELETE FROM \`${tableName}\` WHERE \`${idColumn}\` = ?`;
-    console.log(query);
-    try {
-        const [result] = await pool.execute(query, [idValue]);
-        console.log(`Deleted rows: ${result.affectedRows}`);
-        return result.affectedRows > 0;
-    } catch (err) {
-        console.error('Error executing delete query:', err);
-        throw err;
-    }
-}
-
-async function loadTableData(query, params = []) {
-    var result = [];
-
-    try {
-        [result] = await pool.execute(query, [params]);
-    } catch (err) {
-        console.error('Error executing load query:', err);
-        throw err;
-    }
-    return result;
-}
+const { executeQuery } = require('./db_helpers.js');
 
 async function updateEspRow(data) {
 
@@ -39,23 +14,16 @@ async function updateEspRow(data) {
     SELECT esp.esp_id, esp.esp_name, esp.module_type_ID, esp.room_id, number_of_LEDs.number_of_LEDs 
     FROM esp
     LEFT JOIN number_of_LEDs ON esp.esp_id = number_of_LEDs.esp_id
-    WHERE esp.esp_id = ?;
-`;
-
+    WHERE esp.esp_id = ?;`;
 
     let oldData;
-    try {
-        [oldData] = await pool.execute(queryOldSelect, [esp_id]);
-    }
-    catch (err) {
-        console.error('Error reading old values:', err);
-        throw err;
-    }
+
+    [oldData] = await executeQuery(queryOldSelect, esp_id);
 
     console.log('Old data:');
-    console.log(oldData[0]);
+    console.log(oldData);
 
-    let { esp_id: old_esp_id, esp_name: old_esp_name, number_of_LEDs: old_number_of_LEDs, module_type_ID: old_module_type_ID, room_id: old_room_id } = oldData[0];
+    let { esp_id: old_esp_id, esp_name: old_esp_name, number_of_LEDs: old_number_of_LEDs, module_type_ID: old_module_type_ID, room_id: old_room_id } = oldData;
 
     const queryMainInsert = `
         UPDATE esp 
@@ -82,24 +50,22 @@ async function updateEspRow(data) {
     FROM rooms
     WHERE room_id = ?
     `;
-    
+
     let LED_delay = null;
     let LED_method = null;
 
-    let roomIdOutput;
-    try {
-        [roomIdOutput] = await pool.execute(checkForRoomId, [room_id]);
-    }
-    catch (err) {
-        console.error('Error reading room IDs:', err);
-        throw err;
-    }
-    if (roomIdOutput.length === 0) room_id = old_room_id;
-    else {
-        LED_delay = roomIdOutput[0].LED_delay;
-        LED_method = roomIdOutput[0].LED_method;
-        console.log('LED_delay: ' + LED_delay);
-        console.log('LED_method: ' + LED_method);
+    let roomIdOutput = [];
+
+    console.log(room_id);
+
+    if (room_id !== null) {
+        [roomIdOutput] = await executeQuery(checkForRoomId, room_id);
+
+        if (roomIdOutput.length === 0) room_id = old_room_id;
+        else {
+            LED_delay = roomIdOutput.LED_delay;
+            LED_method = roomIdOutput.LED_method;
+        }
     }
 
     //kontrola ci number_of_leds je cislo
@@ -116,38 +82,28 @@ async function updateEspRow(data) {
             UPDATE number_of_LEDs
             SET 
                 number_of_LEDs = ?
-            WHERE esp_id = ?;
-            `;
+            WHERE esp_id = ?;`;
 
-        try {
-            await pool.execute(EditNumberOfLedsQuery, [number_of_LEDs, esp_id]);
-        }
-        catch (err) {
-            console.error('Error updating row in number_of_LEDs table:', err);
-            throw err;
-        }
+        console.log('number_of_LEDs je: ' + number_of_LEDs + ' a ma hodnotu: ' + typeof number_of_LEDs);
+        console.log('esp_id je: ' + esp_id + ' a ma hodnotu: ' + typeof esp_id);
 
+        await executeQuery(EditNumberOfLedsQuery, [number_of_LEDs, esp_id]);
     }
 
     if (room_id !== old_room_id || (module_type_ID === 0 && number_of_LEDs !== old_number_of_LEDs)) {
         console.log('Sending new data to the ESP');
-        try{
+        try {
             RGBbrokerData(esp_id, LED_delay, LED_method, number_of_LEDs);
         }
-        catch (err){
-            console.log(err);
+        catch (err) {
+            console.error('Error sending data to broker:', err);
+            throw err;
         }
     }
 
-    try {
-        const [result] = await pool.execute(queryMainInsert, [esp_name, module_type_ID, room_id, esp_id]);
-        console.log(`Updated row: ${result.affectedRows}`);
-        return result.affectedRows > 0;
-    }
-    catch (err) {
-        console.error('Error executing update query:', err);
-        throw err;
-    }
+    const result = await executeQuery(queryMainInsert, [esp_name, module_type_ID, room_id, esp_id]);
+    console.log(`Updated row: ${result.affectedRows}`);
+    return result.affectedRows > 0;
 }
 
 
@@ -156,29 +112,27 @@ async function updateRoomsRow(data) {
 
     console.log(data);
 
-    let { room_id, room_name } = data;
+    let { room_id, room_name, LED_delay, LED_method } = data;
 
     console.log(room_id);
     console.log(room_name);
+    console.log(LED_delay);
+    console.log(LED_method);
 
-    room_name = (room_name.trim() === '') ? null : room_name.trim();
+    //room_name = (room_name.trim() === '') ? null : room_name.trim();
 
     const updateQuery = `
     UPDATE rooms 
     SET 
-        room_name = ?
+        room_name = ?, 
+        LED_delay = ?, 
+        LED_method = ?
     WHERE 
         room_id = ?`;
 
-    try {
-        const [result] = await pool.execute(updateQuery, [room_name, room_id]);
-        console.log(`Updated row: ${result.affectedRows}`);
-        return result.affectedRows > 0;
-    }
-    catch (err) {
-        console.error('Error executing update query:', err);
-        throw err;
-    }
+    const result = await executeQuery(updateQuery, [room_name, LED_delay, LED_method, room_id]);
+    console.log(`Updated row: ${result.affectedRows}`);
+    return result.affectedRows > 0;
 }
 
 async function generateRoom(data) {
@@ -188,118 +142,9 @@ async function generateRoom(data) {
     let { roomNumber, roomName } = data;
     const query = `INSERT INTO rooms (room_id, room_name) VALUES (?, ?)`;
 
-    try {
-        const [result] = await pool.execute(query, [roomNumber, roomName]);
-        console.log(`Generated row: ${result.affectedRows}`);
-        return result.affectedRows > 0;
-    }
-    catch (err) {
-        console.error('Error executing update query:', err);
-        throw err;
-    }
+    const result = await executeQuery(query, [roomNumber, roomName]);
+    console.log(`Generated row: ${result.affectedRows}`);
+    return result.affectedRows > 0;
 }
 
-async function getRoomData(roomId) {
-    console.log('Loading data about room number: ' + roomId);
-    let roomData;
-    let correspondingModules;
-
-
-    const roomNameQuery = `SELECT * FROM rooms WHERE room_id = ?`;
-    try {
-        [roomData] = await pool.execute(roomNameQuery, [roomId]);
-    }
-    catch (err) {
-        console.log('Error loading room name: ' + err);
-    }
-
-    const query = `SELECT * FROM esp WHERE room_id = ?`;
-
-    try {
-        [correspondingModules] = await pool.execute(query, [roomId]);
-    }
-    catch (err) {
-        console.log('Error loading modules: ' + err);
-    }
-
-    const response = {
-        room: roomData[0],
-        modules: correspondingModules
-    };
-
-    return response;
-}
-
-async function changeActiveState(esp_id) {
-
-    const query = `UPDATE esp SET isActive = 1 - isActive WHERE esp_id = ?`;
-
-    var result = [];
-
-    try {
-        [result] = await pool.execute(query, [esp_id]);
-        console.log(result.info);
-    }
-    catch (err) {
-        console.log('Error changing state: ' + err);
-        result = err;
-    }
-    
-    return result;
-}
-
-async function changeDelay(req) {
-    const query = `UPDATE rooms SET LED_delay = ? WHERE room_id = ? `;
-
-    var result = [];
-
-    try {
-        [result] = await pool.execute(query, [req.LED_delay, req.room_id]);
-        const esp_query = `SELECT esp_id FROM esp WHERE room_id = ? AND module_type_ID = 0`;
-
-        var esps = [];
-        try{
-            [esps] = await pool.execute(esp_query, [req.room_id])
-            esps.forEach(esp => {
-                RGBbrokerData(esp.esp_id, req.LED_delay, -1, -1);
-            });
-        }
-        catch (err){
-            console.log('Error: ' + err);
-        }
-    
-    }
-    catch (err) {
-        console.log('Error: ' + err);
-    }
-    return result.info;
-}
-
-async function changeMethod(req) {
-    const query = `UPDATE rooms SET LED_method = ? WHERE room_id = ? `;
-
-    var result = [];
-
-    try {
-        [result] = await pool.execute(query, [req.LED_method, req.room_id]);
-        const esp_query = `SELECT esp_id FROM esp WHERE room_id = ? AND module_type_ID = 0`;
-
-        var esps = [];
-        try{
-            [esps] = await pool.execute(esp_query, [req.room_id])
-            esps.forEach(esp => {
-                RGBbrokerData(esp.esp_id, -1, req.LED_method, -1);
-            });
-        }
-        catch (err){
-            console.log('Error: ' + err);
-        }
-    
-    }
-    catch (err) {
-        console.log('Error: ' + err);
-    }
-    return result.info;
-}
-
-module.exports = { deleteRow, loadTableData, updateEspRow, updateRoomsRow, generateRoom, getRoomData, changeActiveState, changeDelay, changeMethod };
+module.exports = { updateEspRow, updateRoomsRow, generateRoom};

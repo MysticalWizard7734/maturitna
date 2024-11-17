@@ -56,49 +56,71 @@ function changeCheckboxAtServer(rgbCheckbox) {
     });
 }
 
-function inputFieldEventListener(inputField, room_id) {
+function inputFieldEventListener(inputField, roomObject) {
     inputField.addEventListener('blur', function () {
         if (!isNaN(parseInt(inputField.value, 10))) {
-            changeDelayAtServer(inputField.value, room_id);
+            changeDelayAtServer(inputField.value, roomObject);
         }
     });
 
 }
 
-function changeDelayAtServer(value, room_id) {
+function changeDelayAtServer(value, roomObject) {
 
-    fetch('/api/changeDelay', {
+    fetch('/api/changeDelayMethod', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            room_id: room_id,
-            LED_delay: value
+            room_id: roomObject.room_id,
+            room_name: roomObject.room_name,
+            LED_delay: value,
+            LED_method: roomObject.LED_method
         })
     });
 }
 
-function buttonMethodEvnetListener(methodButtons, room_id) {
+function buttonMethodEvnetListener(methodButtons, roomObject) {
     methodButtons.forEach(button => {
         button.addEventListener('click', () => {
             methodButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
-            changeLedMethodAtServer(button.id, room_id)
+            changeLedMethodAtServer(button.id, roomObject)
         });
     });
 }
 
-function changeLedMethodAtServer(LED_method, room_id){
+function changeLedMethodAtServer(button_id, roomObject){
 
-    fetch('/api/changeMethod', {
+    fetch('/api/changeDelayMethod', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            room_id: room_id,
-            LED_method: LED_method
+            room_id: roomObject.room_id,
+            room_name: roomObject.room_name,
+            LED_delay: roomObject.LED_delay,
+            LED_method: button_id
+        })
+    });
+}
+
+function releEventListeners(toggleButton){
+    toggleButton.addEventListener('click', function () {
+        sendRelChangeToBroker(toggleButton.id);
+    });
+}
+
+function RelChangeToBroker(esp_id){
+    fetch('/api/relChangeState', {
+        method: 'POST',
+        headers: {
+            'Contet-type': 'application/json'
+        },
+        body: JSON.stringify({
+            esp_id: esp_id
         })
     });
 }

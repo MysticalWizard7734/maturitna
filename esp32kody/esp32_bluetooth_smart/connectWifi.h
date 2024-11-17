@@ -2,6 +2,9 @@ void connectWifi() {
 
   Serial.println("Pripajanie na WiFi");
   WiFi.begin(ssid, password);
+  pinMode(2, OUTPUT);  // Set D2 (GPIO 2) as an output
+  digitalWrite(2, HIGH); // Set to HIGH to turn off (often HIGH turns off built-in LED)
+
 
 
   int attempts = 0;
@@ -14,7 +17,6 @@ void connectWifi() {
     if (SerialBT.available()) {
       // Read input from Bluetooth terminal
       String message = SerialBT.readStringUntil('\n');
-
       
       preferences.begin("saved_data", false);
       preferences.putString("ssid", "");
@@ -22,7 +24,6 @@ void connectWifi() {
       preferences.putString("serverIP", "");
 
       ESP.restart();
-
     }
 
     Serial.print(".");

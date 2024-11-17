@@ -7,9 +7,16 @@ void findBroker() {
     udp.begin(localUdpPort);
     Serial.printf("Now listening at IP %s, UDP port %d\n", WiFi.localIP().toString().c_str(), localUdpPort);
 
+    // Calculate broadcast address
+    for (int i = 0; i < 4; i++) {
+      broadcastIp[i] = (localIp[i] & subnetMask[i]) | ~subnetMask[i];
+    }
+
     while (serverIP == IPAddress(0, 0, 0, 0)) {
-      // Send broadcast message
+
+
       udp.beginPacket(IPAddress(192, 168, 0, 143), localUdpPort);
+      //udp.beginPacket(IPAddress(255, 255, 255, 255), localUdpPort);
       udp.print(replyPacket);
       udp.endPacket();
       Serial.println("Broadcast message sent");

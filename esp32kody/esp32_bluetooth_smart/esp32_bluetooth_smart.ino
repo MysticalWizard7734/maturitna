@@ -7,9 +7,8 @@
 #include <ArduinoJson.h>
 
 #define LED_PIN 4
-#define NUM_LEDS 1000
 
-CRGB leds[60];
+CRGB *leds = nullptr;
 
 Preferences preferences;
 BluetoothSerial SerialBT;
@@ -22,7 +21,7 @@ String id = "";
 int LED_delay = preferences.getInt("LED_delay", 0);
 int LED_method = preferences.getInt("LED_method", 0);
 int number_of_LEDs = preferences.getInt("number_of_LEDs", 0);
-int single_led_delay;
+int single_led_delay = preferences.getInt("single_led_delay", 0);
 
 unsigned int localUdpPort = 12345;  // Local port to listen on
 char incomingPacket[255];           // Buffer for incoming packets
@@ -44,6 +43,13 @@ IPAddress serverIP(0, 0, 0, 0);
 void setup() {
   Serial.begin(115200);
 
+  preferences.begin("saved_data", false);
+  preferences.putString("ssid", "UPC42371CD");
+  preferences.putString("password", "Wxfr2jpyzrWc");
+  //preferences.putString("serverIP", "192.168.0.143");
+  preferences.end();
+
+
   if(number_of_LEDs != 0){
     single_led_delay = LED_delay / number_of_LEDs;
   }
@@ -62,6 +68,8 @@ void setup() {
   connectWifi();
   findBroker();
   connectToBroker();
+
+  setNumberOfLEDs();
 }
 
 void loop() {

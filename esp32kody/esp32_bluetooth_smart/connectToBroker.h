@@ -15,8 +15,10 @@ void handleMessage(byte* payload) {
   if (doc.containsKey("LED_delay") && doc.containsKey("LED_method") && doc.containsKey("number_of_LEDs")) {
     if(doc["LED_delay"] != -1) LED_delay = doc["LED_delay"];
     if(doc["LED_method"] != -1) LED_method = doc["LED_method"];
-    if(doc["number_of_LEDs"] != -1) number_of_LEDs = doc["number_of_LEDs"];
-    
+    if(doc["number_of_LEDs"] != -1) { 
+      number_of_LEDs = doc["number_of_LEDs"];
+      setNumberOfLEDs();
+    }
     setParameters(LED_delay, LED_method, number_of_LEDs);
   }
   else if (doc.containsKey("r") && doc.containsKey("g") && doc.containsKey("b")) {

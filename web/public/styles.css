@@ -21,10 +21,6 @@ button {
   cursor: pointer; /* Pointer cursor on hover */
 }
 
-button:hover {
-  background-color: #555; /* Lighter button on hover */
-}
-
 a {
   text-decoration: none;
   color: antiquewhite;         /* Inherit text color */
@@ -135,7 +131,8 @@ th {
 
 .rgb-div, .rel-div {
   flex: 1;
-  padding: 10px; /* Optional padding */
+  width: 50%; /* Divide the parent container equally */
+  overflow: hidden;
 }
 
 .rgb-button {
@@ -144,7 +141,6 @@ th {
   border: none;
   cursor: pointer;
   background-color: #555; /* Consistent button background */
-  color: antiquewhite; /* Button text color */
 }
 
 .upper-div {
@@ -163,6 +159,19 @@ th {
   margin: 0px 8px;
 }
 
+.input-field{
+  width: 80px;
+  height: 40px;
+  font-size: 20px;
+  border-radius: 8px;
+  color: antiquewhite;
+  background-color: #242424;
+  border: 1px solid #444;
+  box-sizing: border-box;
+  text-align: center; /* Center the text inside the input */
+}
+
+
 .method-button {
   width: 90px; /* Set desired width */
   height: 40px; /* Set desired height */
@@ -171,7 +180,7 @@ th {
   align-items: center;
   padding: 20px;
   border-radius: 15px;
-  border: 1px solid #444; /* 1px is the width, solid is the style, and antiquewhite is the color */
+  border: 1px solid #444; /* 1px is the  width, solid is the style, and antiquewhite is the color */
   cursor: pointer;
   background-color: #242424; /* Set button background */
   color: antiquewhite; /* Button text color */
@@ -194,3 +203,48 @@ th {
 .method-button.selected .fa {
   color: antiquewhite; /* Change Font Awesome icon color to antiquewhite */
 }
+
+.rel-div {
+  display: flex;               /* Use flexbox for alignment */
+  flex-wrap: wrap;             /* Allow items to wrap to the next row if needed */
+  gap: 20px;                   /* Space between buttons and labels */
+  justify-content: center;     /* Center items horizontally */
+  align-items: center;         /* Align items vertically */
+  padding: 20px;               /* Add padding inside the container */
+}
+
+.rel-div{
+  margin: 15px;
+  background-color: #303030;   /* Light background for contrast */
+  border: 1px solid #777777;      /* Optional border for visual separation */
+  border-radius: 10px;         /* Rounded corners for a softer look */
+}
+
+.rgb-div{
+  margin: 15px;
+  padding: 20px;
+  background-color: #303030;   /* Light background for contrast */
+  border: 1px solid #777777;      /* Optional border for visual separation */
+  border-radius: 10px;         /* Rounded corners for a softer look */
+}
+
+.toggle-button {
+  padding: 30px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  background-color: #3a8637;
+  color: white;                /* Make text or icon color white for better visibility */
+  font-size: 16px;             /* Adjust font size for better readability */
+}
+
+.toggle-button.active {
+  background-color: #863737;
+}
+
+.toggle-button-label {
+  color: antiquewhite;                 /* Neutral color for text */
+  margin-left: 8px;           /* Add some spacing between the button and label */
+  display: inline-block;       /* Ensure it aligns next to the button */
+}
+
