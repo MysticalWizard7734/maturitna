@@ -109,15 +109,16 @@ function changeLedMethodAtServer(button_id, roomObject){
 
 function releEventListeners(toggleButton){
     toggleButton.addEventListener('click', function () {
-        sendRelChangeToBroker(toggleButton.id);
+        RelChangeToBroker(toggleButton.id);
     });
 }
 
 function RelChangeToBroker(esp_id){
+    console.log('Sending change state to: ' + esp_id);
     fetch('/api/relChangeState', {
         method: 'POST',
         headers: {
-            'Contet-type': 'application/json'
+            'Content-type': 'application/json'
         },
         body: JSON.stringify({
             esp_id: esp_id

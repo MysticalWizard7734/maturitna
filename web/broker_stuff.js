@@ -60,4 +60,19 @@ function RGBbrokerData(esp_id, LED_delay, LED_method, number_of_LEDs) {
     });
 }
 
-module.exports = {RGBbroker, RGBbrokerData};
+function RELBroker(esp_id){
+    const topic = esp_id;
+    const message = "\n";
+
+    client.publish(topic, message, {qos: 0}, (err) => {
+        if(err){
+            console.log('Publish error: ' + err );
+        }
+        else{
+            console.log('Successful publish on topic: ' + topic);
+        }
+    });
+
+}
+
+module.exports = {RGBbroker, RGBbrokerData, RELBroker};

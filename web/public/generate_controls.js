@@ -140,13 +140,14 @@ function generateRELDiv(relDiv, relModules, roomObject) {
         let label = document.createElement('label');
         label.classList.add('toggle-button-label');
         label.textContent = relModule.esp_name;
-        label.htmlFor = button.id; 
+        label.htmlFor = button.id;
 
-        let edit_state = false;
+        let lightState = localStorage.getItem(`lightState_${index}`) === 'true';
+        button.classList.toggle('active', lightState);
         button.addEventListener('click', (event) => {
-            const row = event.target.closest('tr');
-            button.classList.toggle('active', !edit_state); // Toggle class based on edit_state
-            edit_state = !edit_state;
+            button.classList.toggle('active', !lightState);
+            lightState = !lightState;
+            localStorage.setItem(`lightState_${index}`, lightState);
         });
 
 

@@ -7,7 +7,7 @@ app.use(express.json());  // Middleware to parse JSON request bodies
 
 const { updateEspRow, updateRoomsRow, generateRoom,} = require('./database_backend_operations');
 const { executeQuery } = require('./db_helpers');
-const { RGBbroker } = require('./broker_stuff');
+const { RGBbroker, RELBroker } = require('./broker_stuff');
 const { domainToASCII } = require('url');
 const { query } = require('./db');
 const { error } = require('console');
@@ -138,6 +138,11 @@ app.get('/api/room/:id', (req, res) => {
       handleError(err, res);
     }
   })();
+});
+
+app.post('/api/relChangeState', (req, res) => {
+  const esp_id = req.body.esp_id;
+  RELBroker(esp_id);
 });
 
 app.post('/api/changeModuleState', (req, res) => {
