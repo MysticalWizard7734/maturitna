@@ -66,7 +66,6 @@ function inputFieldEventListener(inputField, roomObject) {
 }
 
 function changeDelayAtServer(value, roomObject) {
-
     fetch('/api/changeDelayMethod', {
         method: 'POST',
         headers: {
@@ -92,7 +91,6 @@ function buttonMethodEvnetListener(methodButtons, roomObject) {
 }
 
 function changeLedMethodAtServer(button_id, roomObject){
-
     fetch('/api/changeDelayMethod', {
         method: 'POST',
         headers: {

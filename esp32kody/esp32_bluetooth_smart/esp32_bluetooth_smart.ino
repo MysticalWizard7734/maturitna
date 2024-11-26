@@ -18,10 +18,10 @@ PubSubClient client(espClient);
 
 String id = "";
 
-int LED_delay = preferences.getInt("LED_delay", 0);
-int LED_method = preferences.getInt("LED_method", 0);
-int number_of_LEDs = preferences.getInt("number_of_LEDs", 0);
-int single_led_delay = preferences.getInt("single_led_delay", 0);
+int LED_delay;
+int LED_method;
+int number_of_LEDs;
+int single_led_delay;
 
 unsigned int localUdpPort = 12345;  // Local port to listen on
 char incomingPacket[255];           // Buffer for incoming packets
@@ -47,8 +47,17 @@ void setup() {
   preferences.putString("ssid", "UPC42371CD");
   preferences.putString("password", "Wxfr2jpyzrWc");
   //preferences.putString("serverIP", "192.168.0.143");
+
+  LED_delay = preferences.getInt("LED_delay", 0);
+  LED_method = preferences.getInt("LED_method", 0);
+  number_of_LEDs = preferences.getInt("number_of_LEDs", 0);
+  single_led_delay = preferences.getInt("single_led_delay", 0);
   preferences.end();
 
+  Serial.println(LED_delay);
+  Serial.println(LED_method);
+  Serial.println(number_of_LEDs);
+  Serial.println(single_led_delay);
 
   if(number_of_LEDs != 0){
     single_led_delay = LED_delay / number_of_LEDs;

@@ -114,11 +114,6 @@ async function updateRoomsRow(data) {
 
     let { room_id, room_name, LED_delay, LED_method } = data;
 
-    console.log(room_id);
-    console.log(room_name);
-    console.log(LED_delay);
-    console.log(LED_method);
-
     //room_name = (room_name.trim() === '') ? null : room_name.trim();
 
     const updateQuery = `
@@ -132,6 +127,20 @@ async function updateRoomsRow(data) {
 
     const result = await executeQuery(updateQuery, [room_name, LED_delay, LED_method, room_id]);
     console.log(`Updated row: ${result.affectedRows}`);
+
+    const affectedEsps = `
+    SELECT esp_id
+    FROM esp
+    WHERE
+        room_id = ? AND module_type_ID = 0`;
+
+    const esps = await executeQuery(affectedEsps, room_id);
+
+    //update the data on esps
+    esps.forEach(esp => {
+        RGBbrokerData(esp.esp_id, LED_delay, LED_method, -1);
+    });
+
     return result.affectedRows > 0;
 }
 
@@ -147,4 +156,4 @@ async function generateRoom(data) {
     return result.affectedRows > 0;
 }
 
-module.exports = { updateEspRow, updateRoomsRow, generateRoom};
+module.exports = { updateEspRow, updateRoomsRow, generateRoom };
