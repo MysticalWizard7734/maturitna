@@ -3,7 +3,7 @@ CREATE DATABASE smart_data;
 
 USE smart_data;
 
-DROP TABLE IF EXISTS number_of_LEDs, esp, rooms, module_types, led_methods;
+DROP TABLE IF EXISTS number_of_LEDs, esp, custom_colors, rooms, module_types, led_methods;
 
 CREATE TABLE module_types (
     module_type_ID int PRIMARY KEY,
@@ -50,4 +50,13 @@ CREATE TABLE number_of_LEDs(
     esp_id char(14) PRIMARY KEY,
         FOREIGN KEY (esp_id) REFERENCES esp(esp_id) ON DELETE CASCADE,
     number_of_LEDs int
+);
+
+CREATE TABLE custom_colors(
+    room_id int,
+        FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE CASCADE,
+    r int,
+    g int,
+    b int,
+    PRIMARY KEY (room_id, r, g, b)
 );

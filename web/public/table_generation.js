@@ -72,8 +72,12 @@ async function generateTable() {
 
                 if (confirmed) {
                     // If the user clicks "OK", proceed with deletion
-                    await delete_row(tableName, id);
-                    event.target.closest('tr').remove();    // Remove the table row after deletion
+                    if(await delete_row(tableName, id)){
+                        event.target.closest('tr').remove();    // Remove the table row after deletion
+                        }
+                        else{
+                            generateTable();
+                        }
                 } else {
                     // If the user clicks "Cancel", do nothing
                     console.log("Deletion cancelled by user.");

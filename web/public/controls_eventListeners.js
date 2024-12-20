@@ -14,12 +14,12 @@ function ledButtonsSetup(rgbButtons, roomObject) {
         rgbButtons[i].style.backgroundColor = `rgba( ${idsAndColors[i].r2}, ${idsAndColors[i].g2}, ${idsAndColors[i].b2})`;
 
         rgbButtons[i].addEventListener("click", function () {
-            sendColor(idsAndColors[i].r1, idsAndColors[i].g1, idsAndColors[i].b1, roomObject);
+            sendColor(idsAndColors[i].r1, idsAndColors[i].g1, idsAndColors[i].b1, roomObject.room_id);
         });
     }
 }
 
-function sendColor(r, g, b, roomObject) {
+function sendColor(r, g, b, room_id) {
     console.log('Colours: ' + r + ' ' + g + ' ' + b);
     //fetch to backend
     fetch('/api/RGBbroker', {
@@ -28,7 +28,7 @@ function sendColor(r, g, b, roomObject) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            room_id: roomObject.room_id,
+            room_id: room_id,
             r: r,
             g: g,
             b: b

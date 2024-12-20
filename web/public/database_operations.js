@@ -10,9 +10,10 @@ async function delete_row(table_name, id) {
 
         const data = await response.json();
         console.log('Server response:', data);
+        return true;
     } catch (error) {
         console.error('There was a problem with the delete request:', error);
-        generateTable();
+        return false;
     }
 }
 

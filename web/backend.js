@@ -5,17 +5,17 @@ const port = 80;
 
 app.use(express.json());  // Middleware to parse JSON request bodies
 
-const { updateEspRow, updateRoomsRow, generateRoom,} = require('./database_backend_operations');
+const { updateEspRow, updateRoomsRow, generateRoom, } = require('./database_backend_operations');
 const { executeQuery } = require('./db_helpers');
 const { RGBbroker, RELBroker } = require('./broker_stuff');
 const { domainToASCII } = require('url');
 const { query } = require('./db');
-const { error } = require('console');
+const { error, table } = require('console');
 
 const idColumnMappings = {
-  esp: 'esp_id',
-  rooms: 'room_id',
-  // TODO add the colours table
+  esp: ['esp_id'],
+  rooms: ['room_id'],
+  custom_colors: ['room_id', 'r', 'g', 'b'], // Array of composite key columns
 };
 
 // this is fine
@@ -27,6 +27,39 @@ app.get('/data', async (req, res) => {
                    LEFT JOIN number_of_LEDs ON number_of_LEDs.esp_id = esp.esp_id
                    LEFT JOIN module_types ON module_types.module_type_ID = esp.module_type_ID;`;
     const data = await executeQuery(query);
+    res.json(data);
+  } catch (err) {
+    handleError(err, res);
+  }
+});
+
+app.get('/api/getCustomColors', async (req, res) => {
+  const room_id = req.query.room_id;
+
+  try {
+    const query = `SELECT r, g, b FROM custom_colors WHERE room_id = ?;`;
+    const data = await executeQuery(query, room_id);
+    res.json(data);
+  } catch (err) {
+    handleError(err, res);
+  }
+});
+
+app.post('/api/storeCustomColor', async (req, res) => {
+  const room_id = req.body.room_id;
+  const R = req.body.r;
+  const G = req.body.g;
+  const B = req.body.b;
+
+  console.log(req.body);
+
+  console.log(R);
+  console.log(G);
+  console.log(B);
+
+  try {
+    const query = `INSERT INTO custom_colors VALUES (?, ?, ?, ?);`;
+    const data = await executeQuery(query, [room_id, R, G, B]);
     res.json(data);
   } catch (err) {
     handleError(err, res);
@@ -46,15 +79,21 @@ app.get('/room-data', async (req, res) => {
 });
 
 app.delete('/delete/:tableName/:id', async (req, res) => {
-  const { tableName, id } = req.params;
-  const idColumn = idColumnMappings[tableName]; // Get the column name for the table
+  var { tableName, id } = req.params;
+  idColumn = idColumnMappings[tableName];
+  const whereClause = idColumn.map(column => `\`${column}\` = ?`).join(' AND '); // Combine conditions for composite keys
   console.log(`Received a delete request: Table=${tableName}, ID=${id}`);
 
   if (!idColumn) {
     return res.status(400).json({ error: 'ID column not defined for this table' });
   }
 
-  const query = `DELETE FROM \`${tableName}\` WHERE \`${idColumn}\` = ?`;
+  const query = `DELETE FROM \`${tableName}\` WHERE ${whereClause}`;
+  console.log('Delete query: ' + query);
+
+  if(tableName == 'custom_colors'){
+    id = id.split('-');
+  }
 
   try {
     const result = await executeQuery(query, id);
@@ -148,11 +187,11 @@ app.post('/api/relChangeState', (req, res) => {
 app.post('/api/changeModuleState', (req, res) => {
   (async () => {
     const query = `UPDATE esp SET isActive = 1 - isActive WHERE esp_id = ?`;
-    try{
-    const result = await executeQuery(query, req.body.changeActiveStateOf);
-    res.json(result);
+    try {
+      const result = await executeQuery(query, req.body.changeActiveStateOf);
+      res.json(result);
     }
-    catch(err){
+    catch (err) {
       handleError(err, res);
     }
   })();
@@ -160,7 +199,7 @@ app.post('/api/changeModuleState', (req, res) => {
 
 app.post('/api/changeDelayMethod', (req, res) => {
   (async () => {
-    const result = updateRoomsRow(req.body) 
+    const result = updateRoomsRow(req.body)
     res.json(result);
   })();
 });
@@ -194,6 +233,10 @@ app.get('/rooms', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'rooms.html'));
 })
 
+app.get('/room_list', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'rooms_menu.html'));
+})
+
 app.get('/room/:id', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'controls.html'));
 });
@@ -215,7 +258,7 @@ function handleError(err, res) {
     'No route found',
     'Module already exists',
     'Failed to connect'
-  ]; 
+  ];
   console.log('Error: ' + err);
   const matchedError = errorMessages.find(errorText => err.message.includes(errorText));
 

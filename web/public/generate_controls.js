@@ -118,10 +118,218 @@ function generateRGBDiv(div, rgbModules, roomObject) {
     rgbButtons.forEach(button => {
         lowerDiv.appendChild(button);
     });
+
     div.appendChild(lowerDiv);
 
     ledButtonsSetup(rgbButtons, roomObject);
 
+    var customColorDiv = document.createElement('div');
+    customColorDiv.classList.add('lower-div');
+
+    var sliderDiv = document.createElement('div');
+
+    var sliders = document.createElement('div');
+
+    const R_Slider = createSlider('r_slider', 'R', sliders);
+    const G_Slider = createSlider('g_slider', 'G', sliders);
+    const B_Slider = createSlider('b_slider', 'B', sliders);
+
+
+    var buttons_div = document.createElement('div');
+
+    createButton('Send Color', () => {
+        const R = parseInt(R_Slider.value, 10);
+        const G = parseInt(G_Slider.value, 10);
+        const B = parseInt(B_Slider.value, 10);
+        sendColor(R, G, B, roomObject.room_id);
+    }, buttons_div);
+
+    async function storeColor(R, G, B, room_id) {
+        await fetch('/api/storeCustomColor', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                room_id: room_id,
+                r: R,
+                g: G,
+                b: B
+            })
+        });
+
+        generateTable(tableDiv);
+    }
+
+    // Button to call storeColor function
+    createButton('Store Color', () => {
+        const R = parseInt(R_Slider.value, 10);
+        const G = parseInt(G_Slider.value, 10);
+        const B = parseInt(B_Slider.value, 10);
+        storeColor(R, G, B, roomObject.room_id);
+    }, buttons_div);
+
+    var tableDiv = document.createElement('div');
+    generateTable(tableDiv);
+
+    sliders.classList.add('sliders');
+    buttons_div.classList.add('buttons_div');
+
+    sliderDiv.classList.add('save-colour-div');
+    tableDiv.classList.add('save-colour-table-div');
+
+    sliderDiv.appendChild(sliders);
+    sliderDiv.appendChild(buttons_div);
+
+    customColorDiv.appendChild(sliderDiv);
+    customColorDiv.appendChild(tableDiv);
+
+    div.appendChild(customColorDiv);
+}
+
+async function generateTable(container) {
+    container.innerHTML = '';
+
+    var table = document.createElement('table');
+
+    var thead = document.createElement('thead');
+    var tr_head = document.createElement('tr');
+    var r_head = document.createElement('th');
+    r_head.innerHTML = 'R';
+    var g_head = document.createElement('th');
+    g_head.innerHTML = 'G';
+    var b_head = document.createElement('th');
+    b_head.innerHTML = 'B';
+    var delete_th = document.createElement('th');
+
+    tr_head.appendChild(r_head);
+    tr_head.appendChild(g_head);
+    tr_head.appendChild(b_head);
+    tr_head.appendChild(delete_th);
+    thead.appendChild(tr_head);
+    table.appendChild(thead)
+
+    var data;
+    try {
+        const response = await fetch(`/api/getCustomColors?room_id=${encodeURIComponent(roomObject.room_id)}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        data = await response.json();
+        console.log('Retrieved data:', data);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+
+
+    var body = document.createElement('tbody');
+
+    data.forEach(color_row => {
+        console.log(color_row.r);
+
+        var row = document.createElement('tr');
+        var r_row = document.createElement('td');
+        r_row.innerHTML = color_row.r;
+        var g_row = document.createElement('td');
+        g_row.innerHTML = color_row.g;
+        var b_row = document.createElement('td');
+        b_row.innerHTML = color_row.b;
+        var actions = document.createElement('td');
+        //target:
+        //<button class="delete-button" data-table="esp" data-esp_id="ESP_0000000003"><i class="fas fa-trash" style="font-size: inherit;"></i></button>
+        actions.innerHTML = '';
+
+        var setButton = document.createElement('button');
+        var delButton = document.createElement('button');
+
+        delButton.classList.add('delete-button');
+        delButton.classList.add('custom-color'); // Apply the color via the class
+
+
+        delButton.addEventListener('click', async (event) => {
+            const tableName = 'custom_colors';
+            var id = roomObject.room_id;
+            id = id + '-' + color_row.r;
+            id = id + '-' + color_row.g;
+            id = id + '-' + color_row.b;
+
+            console.log('Deleting from table: ' + tableName);
+            console.log('On id: ' + id);
+
+            if(await delete_row(tableName, id)){
+            event.target.closest('tr').remove();    // Remove the table row after deletion
+            }
+            else{
+                generateTable(container);
+            }
+        });
+
+        setButton.classList.add('set-button');
+        setButton.addEventListener('click', () =>{
+            sendColor(color_row.r, color_row.g, color_row.b, roomObject.room_id);
+        });
+
+        setButton.style.backgroundColor = `rgb(${color_row.r}, ${color_row.g}, ${color_row.b})`;
+
+        //sendColor(R, G, B, roomObject.room_id);
+
+        actions.appendChild(setButton);
+        actions.appendChild(delButton);
+
+        row.appendChild(r_row);
+        row.appendChild(g_row);
+        row.appendChild(b_row);
+        row.appendChild(actions);
+        body.appendChild(row);
+    });
+
+
+    table.appendChild(body);
+    container.appendChild(table);
+}
+
+// Create a function to create sliders
+function createSlider(id, labelText, container) {
+    const wrapper = document.createElement('div');
+
+    wrapper.classList.add('slider-row');
+
+    // Create label for the slider
+    const label = document.createElement('label');
+    label.htmlFor = id;
+    label.textContent = `${labelText} `;
+    wrapper.appendChild(label);
+
+    // Create slider
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.id = id;
+    slider.value = 0;
+    slider.max = 255; // Limit the slider to 255
+    wrapper.appendChild(slider);
+
+    // Create value display for the slider
+    const valueDisplay = document.createElement('span');
+    valueDisplay.id = `${id}_value`;
+    valueDisplay.textContent = slider.value;
+    wrapper.appendChild(valueDisplay);
+
+    // Update the value display when the slider changes
+    slider.addEventListener('input', () => {
+        valueDisplay.textContent = slider.value;
+    });
+
+    container.appendChild(wrapper);
+    return slider;
+}
+
+function createButton(text, onClick, container) {
+    const button = document.createElement('button');
+    button.classList.add('custom-color-button');
+    button.textContent = text;
+    button.addEventListener('click', onClick);
+    container.appendChild(button);
+    return button;
 }
 
 function generateRELDiv(relDiv, relModules, roomObject) {

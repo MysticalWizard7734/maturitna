@@ -66,9 +66,13 @@ void setColor(int r, int g, int b) {
       }
       break;
     case 6:
+      long double_single_led_delay = (LED_delay - (number_of_LEDs * 7.8)) / 255 * 1000;
       for (int i = 0; i <= 255; i++) {
         for (int j = 0; j < number_of_LEDs; j++) {
           leds[j] = CRGB((r * i) / 255, (g * i) / 255, (b * i) / 255);
+        }
+        if (delayMicroseconds > 0) {
+          delayMicroseconds(double_single_led_delay);
         }
         FastLED.show();
       }
@@ -88,7 +92,8 @@ void setNumberOfLEDs() {
     leds = (CRGB*)malloc(number_of_LEDs * sizeof(CRGB));
     if (number_of_LEDs != 0 && leds == nullptr) {
       Serial.println("Memory allocation failed!");
-      while (1);  // Stop if allocation fails
+      while (1)
+        ;  // Stop if allocation fails
     }
     FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, number_of_LEDs);
     Serial.print("leds have been setup");

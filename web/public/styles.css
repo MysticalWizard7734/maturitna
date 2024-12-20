@@ -1,3 +1,4 @@
+
 /* Ensure table borders don't collapse into each other */
 table {
   width: 100%;
@@ -70,13 +71,36 @@ th {
 }
 
 /* Style the delete and edit buttons */
-.delete-button, .edit-button {
+.delete-button, .edit-button, .set-button {
   background-color: #888; /* Red for delete button */
   color: white; /* White icon color */
   border-radius: 4px; /* Rounded corners */
-  padding: 5px 10px; /* Padding around the icon */
+  padding: 0px; /* Padding around the icon */
   cursor: pointer; /* Pointer cursor on hover */
   margin: 4px;  /* Margin for icon spacing*/
+
+  width: 43px;
+  height: 39px;
+}
+
+.edit-button, .set-button, .delete-button {
+  display: inline-flex;  /* This ensures that both buttons align horizontally */
+  align-items: center;   /* Vertically center the content */
+  justify-content: center; /* Horizontally center the content */
+}
+
+.delete-button i {
+  margin: 0;  /* Remove any default margin */
+  padding: 0; /* Remove any default padding */
+  vertical-align: middle; /* Ensure the icon is vertically centered */
+}
+
+.set-button:hover {
+  filter: brightness(0.8) ; /* Darker on hover */
+}
+
+.custom-color {
+  background-color: rgba(255, 32, 32, 0.685); /* Example color */
 }
 
 .delete-button:hover {
@@ -147,12 +171,14 @@ th {
   display: flex;
   padding: 10px;
   justify-content: center;
+  overflow-x: scroll;
 }
 
 .lower-div {
   display: flex;             /* Enable flexbox */
   justify-content: space-around; /* Spread buttons evenly */
   align-items: center;       /* Align items vertically */
+  overflow-x: scroll;
 }
 
 .checkbox {
@@ -193,6 +219,7 @@ th {
   align-items: center;       /* Align items vertically */
   margin-top: 25px;
   margin-bottom: 25px;
+  overflow-x: scroll;
 }
 
 .method-button.selected {
@@ -248,3 +275,56 @@ th {
   display: inline-block;       /* Ensure it aligns next to the button */
 }
 
+.split-content-div{
+  flex: 1;
+  width: 50%; /* Divide the parent container equally */
+}
+
+.save-colour-div {
+  width: 50%;
+  margin: 15px;
+  padding: 20px;
+  background-color: #303030;
+  border: 1px solid #777777;
+  border-radius: 10px;
+  display: flex;
+  overflow: hidden;
+}
+
+.save-colour-table-div {
+  max-height: 176px;
+  overflow-y: auto;
+  width: 50%;
+  margin: 15px;
+  padding: 20px;
+  background-color: #303030;
+  border: 1px solid #777777;
+  border-radius: 10px;
+  display: flex;
+}
+
+.sliders {
+  min-width: 233px;
+  display: flex;
+  flex-direction: column; /* Keep the sliders stacked vertically */
+  justify-content: space-between; /* Evenly space out the rows */
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column; /* Stack the buttons vertically */
+  justify-content: flex-start; /* Align buttons with the top of the sliders */
+}
+
+.slider-row {
+  display: flex;
+  align-items: center; /* Align label, slider, and value vertically */
+}
+
+.custom-color-button{
+  margin: 10px;
+}
+
+.buttons_div{
+  max-width: 135px;
+}
