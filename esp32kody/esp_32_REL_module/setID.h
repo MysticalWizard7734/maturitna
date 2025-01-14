@@ -20,8 +20,8 @@ void setID(){
   if (id == "") {
     Serial.print("Nacitany prazdny string, Generovanie noveho stringu: ");
     randomSeed(analogRead(23));
-    id = randomString(10);
-    preferences.putString("id", "ESP_" + id);
+    id = "ESP_" + randomString(10);
+    preferences.putString("id", id);
 
     Serial.println(id);
   }
