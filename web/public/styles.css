@@ -328,3 +328,16 @@ th {
 .buttons_div{
   max-width: 135px;
 }
+
+/* Styles for devices with a screen width of 768px or less (like phones) */
+@media (max-width: 1136px) {
+  body {
+    font-size: 16px;  /* Smaller font size for better readability */
+    background-color: #383838;
+  }
+
+  .header {
+    font-size: 1.5rem;  /* Smaller header font for mobile */
+  }
+  
+}

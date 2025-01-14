@@ -16,11 +16,13 @@ async function generateTable() {
         const tbody = document.createElement('tbody');
 
         const headerRow = document.createElement('tr'); // tr = table row = hlavicka tabulky
-        Object.keys(data[0]).forEach(column => {
+        const keys = Object.keys(data[0]);
+        for (let i = 0; i < 2 && i < keys.length; i++) {
             const th = document.createElement('th');
-            th.textContent = column;
+            th.textContent = keys[i];
             headerRow.appendChild(th);
-        });
+            console.log("Created column for: " + keys[i]);
+        }
         const th = document.createElement('th');
         th.textContent = 'Actions';
         headerRow.appendChild(th);
@@ -28,16 +30,17 @@ async function generateTable() {
 
         data.forEach(row => {
             const tr = document.createElement('tr');
-            Object.entries(row).forEach(([key, value]) => {
+            const entries = Object.entries(row); // Get all key-value pairs
+            console.log(entries);
+
+            for (let i = 0; i < 2 && i < entries.length; i++) {
+                const [key, value] = entries[i]; // Destructure the key and value
 
                 const td = document.createElement('td');
-
                 td.textContent = value;
-
-
-                td.dataset.key = key;  // Set the data-key attribute
+                td.dataset.key = key; // Set the data-key attribute
                 tr.appendChild(td);
-            });
+            }
 
             const actionsCell = document.createElement('td');
             actionsCell.classList.add('actions-Cell');
@@ -68,13 +71,13 @@ async function generateTable() {
                 const id = event.target.closest('button').dataset.room_id;
 
                 const confirmed = window.confirm("Skibidi \nAre you sure you want to delete this room? \nThis action can not be reverted.");
-    
+
                 if (confirmed) {
                     // If the user clicks "OK", proceed with deletion
-                    if(await delete_row(tableName, id)){
-                    event.target.closest('tr').remove();    // Remove the table row after deletion
+                    if (await delete_row(tableName, id)) {
+                        event.target.closest('tr').remove();    // Remove the table row after deletion
                     }
-                    else{
+                    else {
                         generateTable();
                     }
                 } else {
